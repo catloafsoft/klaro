@@ -14,17 +14,20 @@ export class TestStore {
         this.value = value;
     }
 
+    // fallow-ignore-next-line unused-class-member
     delete() {
         this.value = null
     }
 }
 
-export class CookieStore {
+class CookieStore {
     constructor(manager) {
         this.cookieName = manager.storageName
         this.cookieDomain = manager.cookieDomain
         this.cookiePath = manager.cookiePath
         this.cookieExpiresAfterDays = manager.cookieExpiresAfterDays
+        this.cookieSameSite = manager.cookieSameSite
+        this.cookieSecure = manager.cookieSecure
     }
 
     get() {
@@ -35,7 +38,7 @@ export class CookieStore {
     }
 
     set(value) {
-        return setCookie(this.cookieName, value, this.cookieExpiresAfterDays, this.cookieDomain, this.cookiePath)
+        return setCookie(this.cookieName, value, this.cookieExpiresAfterDays, this.cookieDomain, this.cookiePath, this.cookieSameSite, this.cookieSecure)
     }
 
     delete() {
@@ -50,27 +53,53 @@ class StorageStore {
     }
 
     get() {
-        return this.handle.getItem(this.key);
+        try {
+            return this.handle.getItem(this.key);
+        } catch (e) {
+            console.warn('Klaro storage is unavailable:', e);
+            return null;
+        }
     }
 
     getWithKey(key) {
-        return this.handle.getItem(key);
+        try {
+            return this.handle.getItem(key);
+        } catch (e) {
+            console.warn('Klaro storage is unavailable:', e);
+            return null;
+        }
     }
 
     set(value) {
-        return this.handle.setItem(this.key, value)
+        try {
+            return this.handle.setItem(this.key, value)
+        } catch (e) {
+            console.warn('Klaro storage is unavailable:', e);
+        }
     }
 
     setWithKey(key, value) {
-        return this.handle.setItem(key, value)
+        try {
+            return this.handle.setItem(key, value)
+        } catch (e) {
+            console.warn('Klaro storage is unavailable:', e);
+        }
     }
 
     delete() {
-        return this.handle.removeItem(this.key);
+        try {
+            return this.handle.removeItem(this.key);
+        } catch (e) {
+            console.warn('Klaro storage is unavailable:', e);
+        }
     }
 
     deleteWithKey(key) {
-        return this.handle.removeItem(key);
+        try {
+            return this.handle.removeItem(key);
+        } catch (e) {
+            console.warn('Klaro storage is unavailable:', e);
+        }
     }
 }
 

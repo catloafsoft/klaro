@@ -1,56 +1,57 @@
 {
   "author": "KIProtect GmbH",
   "browserslist": [
-    "> 0.25%",
-    "IE 11",
-    "IE 9"
+    "defaults and fully supports es6-module",
+    "not dead"
   ],
   "bugs": {
     "url": "https://github.com/KIProtect/klaro/issues"
   },
-  "dependencies": {
-    "sass": "^1.25.0",
-    "webpack-merge": "^5.10.0"
-  },
   "description": "A simple but powerful consent manager.",
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "7.24.0",
-    "@babel/eslint-parser": "^7.23.10",
-    "@babel/plugin-proposal-class-properties": "7.16.7",
-    "@babel/plugin-proposal-object-rest-spread": "7.17.3",
-    "@babel/preset-env": "7.24.0",
-    "@babel/preset-react": "7.23.3",
-    "autoprefixer": "^10.4.18",
-    "babel-loader": "9.1.3",
+    "@babel/cli": "^7.29.7",
+    "@babel/core": "^7.29.7",
+    "@babel/plugin-transform-class-properties": "^7.29.7",
+    "@babel/plugin-transform-object-rest-spread": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "@babel/preset-react": "^7.29.7",
+    "@babel/preset-typescript": "^7.29.7",
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@testing-library/preact": "^3.2.4",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.5.0",
+    "babel-loader": "^10.1.1",
     "classnames": "^2.5.1",
-    "core-js": "^3.36.0",
-    "cross-env": "^7.0.3",
-    "css-loader": "^6.10.0",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react": "^7.34.0",
-    "file-loader": "^6.2.0",
-    "json-loader": "^0.5.7",
-    "mini-css-extract-plugin": "^2.8.1",
-    "postcss-loader": "^8.1.1",
-    "preact": "^10.19.6",
-    "sass-loader": "^14.1.1",
-    "style-loader": "^3.3.4",
-    "stylelint": "^16.2.1",
-    "stylelint-config-sass-guidelines": "^11.0.0",
-    "url-loader": "^4.1.1",
-    "webpack": "^5.90.3",
-    "webpack-bundle-analyzer": "^4.10.1",
-    "webpack-bundle-size-analyzer": "^3.1.0",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.2",
-    "webpack-hot-middleware": "^2.26.1",
-    "yaml-loader": "^0.8.1"
+    "core-js": "^3.49.0",
+    "cross-env": "^10.1.0",
+    "css-loader": "^7.1.4",
+    "eslint": "^10.5.0",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^17.6.0",
+    "jsdom": "^29.1.1",
+    "mini-css-extract-plugin": "^2.10.2",
+    "postcss-loader": "^8.2.1",
+    "preact": "^10.29.2",
+    "sass": "^1.101.0",
+    "sass-loader": "^17.0.0",
+    "style-loader": "^4.0.0",
+    "stylelint": "^17.13.0",
+    "stylelint-config-standard-scss": "^17.0.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.0",
+    "vitest": "^4.1.8",
+    "webpack": "^5.107.2",
+    "webpack-bundle-analyzer": "^5.3.0",
+    "webpack-cli": "^7.0.3",
+    "webpack-dev-server": "^5.2.5",
+    "webpack-merge": "^6.0.1",
+    "yaml-loader": "^0.9.0"
   },
   "files": [
-    "*.js",
-    "*.css",
-    "*.scss",
+    "dist",
+    "types",
     "src/**/*.css",
     "src/**/*.scss",
     "src/**/*.js",
@@ -59,6 +60,18 @@
     "src/**/*.tsx",
     "src/**/*.yml"
   ],
+  "peerDependencies": {
+    "react": ">=18 <20",
+    "react-dom": ">=18 <20"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
   "homepage": "https://klaro.kiprotect.com/",
   "keywords": [
     "cookie",
@@ -68,7 +81,40 @@
   ],
   "license": "BSD-3-Clause",
   "main": "dist/klaro.js",
+  "module": "dist/klaro.js",
   "name": "klaro",
+  "packageManager": "pnpm@11.6.0",
+  "types": "types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/klaro.js",
+      "require": "./dist/klaro.js",
+      "default": "./dist/klaro.js"
+    },
+    "./no-css": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/klaro-no-css.js",
+      "require": "./dist/klaro-no-css.js",
+      "default": "./dist/klaro-no-css.js"
+    },
+    "./cm": {
+      "types": "./types/consent-manager.d.ts",
+      "import": "./dist/cm.js",
+      "require": "./dist/cm.js",
+      "default": "./dist/cm.js"
+    },
+    "./translations": {
+      "types": "./types/translations.d.ts",
+      "import": "./dist/translations.js",
+      "require": "./dist/translations.js",
+      "default": "./dist/translations.js"
+    },
+    "./dist/*": "./dist/*",
+    "./klaro.css": "./dist/klaro.css",
+    "./klaro.min.css": "./dist/klaro.min.css",
+    "./package.json": "./package.json"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kiprotect/klaro.git"
@@ -80,7 +126,9 @@
     "lint-scss-fix": "stylelint ./src/scss/*.scss --fix",
     "make": "cross-env APP_ENV=production webpack --mode production --config webpack.config.js",
     "make-dev": "cross-env APP_ENV=dev webpack serve --mode development --config webpack.config.js",
-    "make-watch": "cross-env APP_ENV=dev webpack --mode development --watch --config webpack.config.js"
+    "make-watch": "cross-env APP_ENV=dev webpack --mode development --watch --config webpack.config.js",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "version": "0.7.22"
 }

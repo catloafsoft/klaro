@@ -1,8 +1,8 @@
-const exp = require('constants');
 const path = require('path');
 const BUILD_DIR = path.resolve(__dirname, 'dist');
 const SRC_DIR = path.resolve(__dirname, 'src');
 const STYLE_FILES = /\.(sa|sc|c)ss$/;
+const sass = require('sass');
 
 const SEPARATE_CSS = process.env.SEPARATE_CSS !== undefined;
 
@@ -16,10 +16,12 @@ let config = {
     devtool: 'inline-source-map',
     resolve: {
         symlinks: false,
-        extensions: ['.jsx', '.js'],
+        extensions: ['.tsx', '.ts', '.jsx', '.js'],
         modules: [SRC_DIR, 'node_modules'],
         alias: {
             react: 'preact/compat',
+            'react/jsx-runtime': 'preact/jsx-runtime',
+            'react-dom/client': 'preact/compat/client',
             'react-dom': 'preact/compat',
         },
     },
@@ -27,14 +29,19 @@ let config = {
         rules: [
             {
                 test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-                use: 'url-loader?limit=100000',
+                type: 'asset',
+                parser: {
+                    dataUrlCondition: {
+                        maxSize: 100000,
+                    },
+                },
             },
             {
                 test: /\.yaml|yml$/,
                 use: ['yaml-loader'],
             },
             {
-                test: /\.jsx?/,
+                test: /\.[jt]sx?$/,
                 exclude: /node_modules/,
                 include: [SRC_DIR],
                 loader: 'babel-loader',
@@ -45,11 +52,12 @@ let config = {
         'klaro': path.join(SRC_DIR, 'klaro.js'),
         cm: path.join(SRC_DIR, 'consent-manager.js'),
         translations: path.join(SRC_DIR, 'translations.js'),
-        ide: path.join(SRC_DIR, 'ide.js')
+        ide: path.join(SRC_DIR, 'ide.tsx')
     },
     output: {
         path: BUILD_DIR,
         filename: SEPARATE_CSS ? '[name]-no-css.js' : '[name].js',
+        globalObject: 'globalThis',
         library: '[name]',
         libraryTarget: 'umd',
         publicPath: '',
@@ -90,7 +98,8 @@ if (SEPARATE_CSS) {
             {
                 loader: 'sass-loader',
                 options: {
-                    implementation: require.resolve("sass"),
+                    api: 'modern',
+                    implementation: sass,
                     sassOptions: {
                         sourceMap: APP_ENV === 'development',
                         outputStyle: NO_MINIFY_CSS ? 'expanded' : 'compressed',
@@ -127,7 +136,8 @@ if (SEPARATE_CSS) {
             {
                 loader: 'sass-loader',
                 options: {
-                    implementation: require.resolve("sass"),
+                    api: 'modern',
+                    implementation: sass,
                 },
             },
         ],

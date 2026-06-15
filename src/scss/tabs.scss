@@ -1,4 +1,6 @@
-@import './vars';
+@use './vars' as *;
+
+@mixin styles {
 
 @media (min-width: $cm-tablet) {
     .cm-tabs span.cm-more {
@@ -148,4 +150,6 @@
             }
         }
     }
+}
+
 }

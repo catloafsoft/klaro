@@ -53,6 +53,16 @@ export default class ConsentManager {
         return this.config.cookieExpiresAfterDays || 120
     }
 
+    get cookieSameSite(){
+        return this.config.cookieSameSite || 'Lax'
+    }
+
+    get cookieSecure(){
+        if (this.config.cookieSecure !== undefined)
+            return this.config.cookieSecure
+        return window.location.protocol === 'https:'
+    }
+
     get defaultConsents(){
         const consents = {}
         for(let i=0;i<this.config.services.length;i++){
@@ -86,6 +96,8 @@ export default class ConsentManager {
     }
 
     getDefaultConsent(service){
+        if (this.config.respectGlobalPrivacyControl && navigator.globalPrivacyControl && !service.required)
+            return false
         let consent = service.default || service.required
         if (consent === undefined)
             consent = this.config.default
@@ -132,9 +144,17 @@ export default class ConsentManager {
     loadConsents(){
         const consentData = this.store.get();
         if (consentData !== null){
-            this.consents = JSON.parse(decodeURIComponent(consentData))
-            this._checkConsents()
-            this.notify('consents', this.consents)
+            try {
+                this.consents = JSON.parse(decodeURIComponent(consentData))
+                this._checkConsents()
+                this.notify('consents', this.consents)
+            } catch (e) {
+                console.warn('Could not parse Klaro consent data, resetting stored consents:', e)
+                this.store.delete()
+                this.consents = this.defaultConsents
+                this.confirmed = false
+                this.changed = true
+            }
         }
         return this.consents
     }
@@ -172,8 +192,8 @@ export default class ConsentManager {
             if (typeof handler === 'function'){
                 handlerFunction = handler
             } else {
-                // eslint-disable-next-line no-new-func
-                handlerFunction = new Function('opts', handler)
+                console.warn('Klaro string handlers are no longer executed. Use function handlers instead.')
+                return
             }
             return handlerFunction(opts)
         }

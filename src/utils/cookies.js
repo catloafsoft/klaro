@@ -23,7 +23,7 @@ export function getCookie(name) {
 }
 
 //https://stackoverflow.com/questions/14573223/set-cookie-and-get-cookie-with-javascript
-export function setCookie(name, value, days, domain, path) {
+export function setCookie(name, value, days, domain, path, sameSite, secure) {
     let expires = '';
     if (days) {
         const date = new Date();
@@ -39,7 +39,7 @@ export function setCookie(name, value, days, domain, path) {
         expires += '; path=/';
     }
     document.cookie =
-        name + '=' + (value || '') + expires + '; SameSite=Lax';
+        name + '=' + (value || '') + expires + '; SameSite=' + (sameSite || 'Lax') + (secure ? '; Secure' : '');
 }
 
 export function deleteCookie(name, path, domain) {

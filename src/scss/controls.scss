@@ -1,7 +1,8 @@
 
 @use "sass:map";
-@import './vars';
+@use './vars' as *;
 
+@mixin styles {
 .cm-language-select,
 .cm-theme-select,
 .cm-purpose-select {
@@ -296,4 +297,6 @@ p.cm-description {
     &[disabled] {
         @include var(background-color, light2);
     }
+}
+
 }

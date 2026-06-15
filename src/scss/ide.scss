@@ -1,15 +1,19 @@
-
 @use "sass:map";
-@import './modal';
-@import './vars';
+@use './vars' as *;
+@use './modal' as *;
+@use './switch';
+@use './controls';
+@use './tabs';
+@use './list';
+@use './dropdown';
 
 .klaro-ide {
 
-    @import './switch';
-    @import './controls';
-    @import './tabs';
-    @import './list';
-    @import './dropdown';
+    @include switch.styles;
+    @include controls.styles;
+    @include tabs.styles;
+    @include list.styles;
+    @include dropdown.styles;
 
     label {
         display: inline-block;

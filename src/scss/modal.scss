@@ -1,3 +1,5 @@
+@use './vars' as *;
+
 @mixin modal($centerWidth, $windowWidth) {
 
     @include var(background-color, dark1);

@@ -1,9 +1,23 @@
 {
-  "extends": "stylelint-config-sass-guidelines",
+  "extends": "stylelint-config-standard-scss",
   "rules": {
     "at-rule-no-unknown": null,
+    "at-rule-empty-line-before": null,
+    "alpha-value-notation": null,
+    "color-function-alias-notation": null,
+    "color-function-notation": null,
+    "comment-empty-line-before": null,
+    "declaration-block-no-duplicate-properties": null,
+    "declaration-block-no-redundant-longhand-properties": null,
+    "declaration-empty-line-before": null,
+    "font-family-no-missing-generic-family-keyword": null,
+    "no-descending-specificity": null,
+    "no-invalid-position-at-import-rule": null,
+    "no-invalid-position-declaration": null,
     "property-no-vendor-prefix": null,
     "max-nesting-depth": 8,
+    "scss/dollar-variable-empty-line-before": null,
+    "scss/double-slash-comment-empty-line-before": null,
     "selector-no-qualifying-type": null,
     "selector-max-compound-selectors": 8
   }

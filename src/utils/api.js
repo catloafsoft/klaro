@@ -1,15 +1,4 @@
-import { version } from '../lib';
-
-function formatParams(params) {
-    return (
-        '?' +
-        Object.keys(params)
-            .map(function (key) {
-                return key + '=' + encodeURIComponent(params[key]);
-            })
-            .join('&')
-    );
-}
+import { version } from './version';
 
 export default class KlaroApi {
     constructor(url, id, opts) {
@@ -46,6 +35,7 @@ export default class KlaroApi {
         };
     }
 
+    // fallow-ignore-next-line unused-class-member
     update(notifier, name, data) {
         if (name === 'saveConsents') {
             if (data.type === 'save' && Object.keys(data.changes).length === 0)
@@ -75,48 +65,41 @@ export default class KlaroApi {
     }
 
     apiRequest(type, path, data, contentType) {
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
+        let body;
+        let url = this.url + path;
 
-            xhr.addEventListener('load', () => {
-                const data = JSON.parse(xhr.response);
-                if (xhr.status < 200 || xhr.status >= 300) {
-                    data.status = xhr.status;
-                    // the request wasn't successful
-                    reject(data);
-                } else {
-                    // the request was successful
-                    resolve(data, xhr.status);
-                }
-            });
-
-            xhr.addEventListener('error', () => {
-                // something else went wrong (e.g. request got blocked)
-                reject({ status: 0, xhr: xhr });
-            });
-
-            let body;
-
-            if (data !== undefined) {
-                if (type === 'GET') {
-                    path += '?' + formatParams(data);
-                } else {
-                    body = JSON.stringify(data);
-                }
+        if (data !== undefined) {
+            if (type === 'GET') {
+                const query = new URLSearchParams(
+                    Object.entries(data).filter(([, value]) => value !== undefined)
+                ).toString();
+                if (query !== '')
+                    url += (url.indexOf('?') === -1 ? '?' : '&') + query;
+            } else {
+                body = JSON.stringify(data);
             }
+        }
 
-            xhr.open(type, this.url + path);
+        const headers = {};
+        if (body !== undefined)
+            headers['Content-Type'] = contentType || 'application/json;charset=UTF-8';
 
-            if (body !== undefined) {
-                // we must call setRequestHeader after 'open'
-                xhr.setRequestHeader(
-                    'Content-Type',
-                    contentType || 'application/json;charset=UTF-8'
-                );
-            }
-
-            xhr.send(body);
-        });
+        return fetch(url, { method: type, headers: headers, body: body })
+            .then((response) => response.text().then((text) => {
+                let responseData = {};
+                if (text !== '')
+                    responseData = JSON.parse(text);
+                if (response.status < 200 || response.status >= 300) {
+                    responseData.status = response.status;
+                    throw Object.assign(new Error('Klaro API request failed'), responseData);
+                }
+                return responseData;
+            }))
+            .catch((err) => {
+                if (err.status !== undefined)
+                    throw err;
+                throw Object.assign(new Error('Klaro API request failed'), { status: 0, error: err });
+            });
     }
 
     submitConsentData(consentData) {
@@ -134,17 +117,9 @@ export default class KlaroApi {
     loadConfig(name) {
         return this.apiRequest(
             'GET',
-            '/v1/privacy-managers/' + this.id + '/config.json?name=' + name + (this.opts.testing ? '&testing=true' : '')
+            '/v1/privacy-managers/' + this.id + '/config.json',
+            { name: name, testing: this.opts.testing || undefined }
         );
     }
 
-    /*
-    Load Klaro configs from the API.
-    */
-    loadConfigs() {
-        return this.apiRequest(
-            'GET',
-            '/v1/privacy-managers/' + this.id + '/configs.json' + (this.opts.testing ? '&testing=true' : '')
-        );
-    }
 }

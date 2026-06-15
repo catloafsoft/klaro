@@ -1,6 +1,7 @@
 @use "sass:map";
-@import './modal';
-@import './vars';
+@use './vars' as *;
+@use './modal' as *;
+@use './switch';
 
 .klaro {
 
@@ -24,7 +25,7 @@
     .cookie-modal,
     .context-notice,
     .cookie-notice {
-        @import 'switch';
+        @include switch.styles;
 
         .slider {
             box-shadow: $cm-box-shadow-dark-md;
@@ -66,7 +67,12 @@
         }
 
         .cm-link {
+            appearance: none;
+            background: transparent;
+            border: 0;
+            cursor: pointer;
             margin-right: 0.5em;
+            padding: 0;
             vertical-align: middle;
         }
 
@@ -153,6 +159,15 @@
         p.ccn-description-empty-store {
             margin-top: map.get($cm-space, lg);            
             @include var(font-size, font-size);
+
+            .ccn-modal-link {
+                appearance: none;
+                background: transparent;
+                border: 0;
+                cursor: pointer;
+                padding: 0;
+                @include var(color, green2);
+            }
         }
     }
 
