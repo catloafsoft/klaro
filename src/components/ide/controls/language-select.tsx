@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { SearchSelect } from './search-select';
 
+const EMPTY_LANGUAGES: string[] = [];
+
 export const LanguageSelect = ({field, disabled, config, prefix, t, updateConfig}: any) => {
     const [search, setSearch] = useState('')
     const languages: Record<string, any> = t.tv.languages
-    const currentLanguages = config[field.name] || []
+    const currentLanguages = (config[field.name] as string[] | undefined) || EMPTY_LANGUAGES
     const existingLanguages = useMemo(() => new Set(currentLanguages), [currentLanguages])
     const candidates = useMemo(() => {
         const query = search.toLowerCase()
@@ -25,9 +27,8 @@ export const LanguageSelect = ({field, disabled, config, prefix, t, updateConfig
     ))
 
     const selectLanguage = (language: any) => {
-        const values = currentLanguages
-        if (!values.find((value: string) => value === language.name)){
-            updateConfig([field.name], [...values, language.name])
+        if (!currentLanguages.find((value: string) => value === language.name)){
+            updateConfig([field.name], [...currentLanguages, language.name])
         }
         setSearch('')
     }

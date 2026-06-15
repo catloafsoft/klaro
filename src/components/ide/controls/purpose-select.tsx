@@ -1,40 +1,48 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { SearchSelect } from './search-select';
+
+const EMPTY_PURPOSES: string[] = [];
 
 export const PurposeSelect = ({field, disabled, prefix, config, t, updateConfig}: any) => {
     const [search, setSearch] = useState('')
     const purposes: Record<string, any> = t.tv.purposes
-    const existingPurposes = new Set(config[field.name])
-    const generateInitialPurposes = () => Array.from(Object.entries(purposes)).filter(([k]) => !existingPurposes.has(k)).map(([k, v]) => ({name: k, description: t(['purposes', k, 'description']), value: t.lang === 'en' ?  `${v.title.en}` : `${v.title.en} - ${t(['purposes', k, 'title'])}`}))
-    const [candidates, setCandidates] = useState(() => generateInitialPurposes())
+    const values = (config[field.name] as string[] | undefined) || EMPTY_PURPOSES
+    const candidates = useMemo(() => {
+        const existingPurposes = new Set(values)
+        const query = search.toLowerCase()
+        const candidatePurposes = Array.from(Object.entries(purposes)).filter(([k]) => (
+            !existingPurposes.has(k) &&
+            (query === '' || k.toLowerCase().includes(query) || String(t(['purposes', k, 'title'])).toLowerCase().includes(query))
+        ))
+        let nextCandidates = candidatePurposes.map(([k, v]) => ({
+            name: k,
+            description: t(['purposes', k, 'description']),
+            value: t.lang === 'en' ? `${v.title.en}` : `${v.title.en} - ${t(['purposes', k, 'title'])}`,
+        }))
+        if (nextCandidates.length > 10)
+            nextCandidates = []
+        if (search !== '')
+            nextCandidates.push({name: search, description: t(['purpose', 'descriptionNotice']), value: `${search} (${t(['purpose', 'add'])})`})
+        return nextCandidates
+    }, [purposes, search, t, values])
+
     const updateSearch = (value: string) => {
-        const candidatePurposes = Array.from(Object.entries(purposes)).filter(([k]) => !existingPurposes.has(k) && (value === '' || k.toLowerCase().includes(value.toLowerCase()) || t(['purposes', k, 'title']).toLowerCase().includes(value.toLowerCase())))
-        let candidates = candidatePurposes.map(cl => ({name: cl[0], description: t(['purposes', cl[0], 'description']), value: `${cl[1].title.en} - ${t(['purposes', cl[0], 'title'])}`}))
-        if (candidates.length > 10)
-            candidates = []
-        if (value !== '')
-            candidates.push({name: value, description: t(['purpose', 'descriptionNotice']), value: `${value} (${t(['purpose', 'add'])})`})
-        setCandidates(candidates)
         setSearch(value)
     }
 
     const removePurpose = (purpose: string) => {
-        updateConfig([field.name], config[field.name].filter((lang: string) => lang !== purpose))
-        setCandidates(generateInitialPurposes())
+        updateConfig([field.name], values.filter((value: string) => value !== purpose))
     }
 
-    const purposeItems = config[field.name].map((purpose: string) => (
+    const purposeItems = values.map((purpose: string) => (
         <li key={purpose}>{purpose} <button type="button" className="cm-link" onClick={() => removePurpose(purpose)}>&#10540;</button></li>
     ))
 
     const selectPurpose = (purpose: any) => {
-        const values = config[field.name]
         if (!values.find((value: string) => value === purpose.name)){
-            config[field.name].push(purpose.name)
-            updateConfig([field.name], config[field.name])
+            updateConfig([field.name], [...values, purpose.name])
         }
         setSearch('')
-        setCandidates(generateInitialPurposes())
     }
 
     return <div className="cm-purpose-select">

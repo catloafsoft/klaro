@@ -8,7 +8,7 @@ export function getPurposes(config: any): string[] {
     return Array.from(purposes);
 }
 
-export function update(ed: Record<string, any>, d: Record<string, any>, overwrite = true): Record<string, any> {
+export function updateConfigObject(ed: Record<string, any>, d: Record<string, any>, overwrite = true): Record<string, any> {
     const keys = Object.keys(d);
     for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
@@ -20,7 +20,7 @@ export function update(ed: Record<string, any>, d: Record<string, any>, overwrit
             if (overwrite || ved === undefined) ed[key] = vd;
         } else if (typeof vd === 'object') {
             if (typeof ved === 'object') {
-                update(ved, vd, overwrite);
+                updateConfigObject(ved, vd, overwrite);
             } else if (overwrite || ved === undefined) {
                 ed[key] = vd;
             }

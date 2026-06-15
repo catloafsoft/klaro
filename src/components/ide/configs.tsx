@@ -16,12 +16,14 @@ interface ConfigItemProps {
     t: Translator;
 }
 
-const ConfigItem = ({t, config, onConfigAction, onClick}: ConfigItemProps) => <ListItem onClick={() => onClick(config)} isCard key={config.name}>
+const ConfigItem = ({t, config, onConfigAction, onClick}: ConfigItemProps) => <ListItem isCard key={config.name}>
     <ListColumn size="icon cm-status">
         <span title={config.status} className={"cm-status-is-"+config.status}>{config.status === 'active' ? <span>&oplus;</span> : <span>&otimes;</span>}</span>
     </ListColumn>
     <ListColumn size="lg cm-name">
-        <p>{config.name === "default" ? t(['configs', 'default', 'title']) : config.name}</p>
+        <button type="button" className="cm-link" onClick={() => onClick(config)}>
+            {config.name === "default" ? t(['configs', 'default', 'title']) : config.name}
+        </button>
     </ListColumn>
     <ListColumn size="icon">
         <DropdownMenu>

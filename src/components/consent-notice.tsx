@@ -16,7 +16,7 @@ interface ConsentNoticeProps extends BaseComponentProps {
 const ConsentNotice = ({ lang, config, show, manager, testing, t, modal: modalProp, hide }: ConsentNoticeProps) => {
     const [localModal, setLocalModal] = useState(false);
     const [confirming, setConfirming] = useState(false);
-    const noticeRef = useRef<HTMLDivElement | null>(null);
+    const noticeRef = useRef<HTMLElement | null>(null);
     const { embedded, noticeAsModal, hideLearnMore } = config;
     const modal = Boolean(modalProp) || localModal;
 
@@ -161,17 +161,8 @@ const ConsentNotice = ({ lang, config, show, manager, testing, t, modal: modalPr
             />
         );
 
-    const notice = (
-        <div
-            role="dialog"
-            aria-describedby="id-cookie-notice"
-            aria-labelledby="id-cookie-title"
-            id="klaro-cookie-notice"
-            tabIndex={0}
-            autoFocus={config.autoFocus}
-            ref={noticeRef}
-            className={`cookie-notice ${!noticeIsVisible && !testing ? 'cookie-notice-hidden' : ''} ${noticeAsModal ? 'cookie-modal-notice' : ''} ${embedded ? 'cn-embedded' : ''}`}
-        >
+    const noticeBody = (
+        <>
             <div className="cn-body">
                 {t(['!', 'consentNotice', 'title']) && config.showNoticeTitle && (
                     <h2 id="id-cookie-title">{t(['consentNotice', 'title'])}</h2>
@@ -196,7 +187,33 @@ const ConsentNotice = ({ lang, config, show, manager, testing, t, modal: modalPr
                     </div>
                 </div>
             </div>
-        </div>
+        </>
+    );
+
+    const noticeClassName = `cookie-notice ${!noticeIsVisible && !testing ? 'cookie-notice-hidden' : ''} ${noticeAsModal ? 'cookie-modal-notice' : ''} ${embedded ? 'cn-embedded' : ''}`;
+    const notice = noticeAsModal ? (
+        <dialog
+            open
+            aria-describedby="id-cookie-notice"
+            aria-labelledby="id-cookie-title"
+            id="klaro-cookie-notice"
+            ref={noticeRef as React.RefObject<HTMLDialogElement | null>}
+            className={noticeClassName}
+        >
+            {noticeBody}
+        </dialog>
+    ) : (
+        <section
+            aria-describedby="id-cookie-notice"
+            aria-labelledby="id-cookie-title"
+            id="klaro-cookie-notice"
+            tabIndex={-1}
+            autoFocus={config.autoFocus}
+            ref={noticeRef}
+            className={noticeClassName}
+        >
+            {noticeBody}
+        </section>
     );
 
     if (!noticeAsModal)

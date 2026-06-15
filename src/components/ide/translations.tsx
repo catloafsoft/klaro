@@ -1,7 +1,7 @@
 import React from 'react';
 import translations from '../../translations/index';
 import { Tabs, Tab } from './tabs';
-import { BaseRetractingLabelInput } from './controls';
+import { BaseRetractingLabelInput } from './controls/input';
 import { getValue, getFallbackValue } from './utils/i18n'
 
 interface TranslationsForKeyProps {

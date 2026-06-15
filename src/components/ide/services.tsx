@@ -1,14 +1,15 @@
 import React from "react";
 import { List, ListHeader, ListItem, ListColumn } from "./list";
 import { DropdownMenu, MenuItem } from "./dropdown";
-import * as Controls from './controls';
+import { ServiceSelect } from './controls/service-select';
+import { controlMap } from './controls/control-map';
 import Spec from './spec';
 
-const controlMap = Controls as Record<string, React.ComponentType<any>>;
-
-const ServiceItem = ({t, service, onClick, updateConfig}: any) => <ListItem onClick={()=>onClick(service)} isCard key={service._id}>
+const ServiceItem = ({t, service, onClick, updateConfig}: any) => <ListItem isCard key={service._id}>
     <ListColumn size="md">
-        <p className="cm-name">{service.name}</p>
+        <button type="button" className="cm-link cm-name" onClick={() => onClick(service)}>
+            {service.name}
+        </button>
     </ListColumn>
     <ListColumn size="icon">
         <DropdownMenu>
@@ -109,7 +110,7 @@ export const Services = ({ t, state, services, setState, config, disabled, updat
             />
             <div className="cm-config-controls">
                 <fieldset>
-                    <Controls.ServiceSelect services={newServices} updateConfig={updateConfig} config={config} field={{name: 'services'}} t={t} />
+                    <ServiceSelect services={newServices} updateConfig={updateConfig} config={config} field={{name: 'services'}} t={t} />
                 </fieldset>
             </div>
         </React.Fragment>

@@ -3,6 +3,21 @@ import {dataset, applyDataset} from './utils/compat'
 import stores, { SessionStorageStore } from './stores'
 import type { ConsentMap, KlaroConfig, KlaroService, KlaroWatcher } from './types'
 
+const COOKIE_PATTERN_REGEXES = new Map<string, RegExp>();
+
+function escapeRegexStr(str: string) {
+    return str.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&");
+}
+
+function getCookiePatternRegex(pattern: string): RegExp {
+    let regex = COOKIE_PATTERN_REGEXES.get(pattern);
+    if (regex === undefined) {
+        regex = pattern.startsWith('^') ? new RegExp(pattern) : new RegExp('^'+escapeRegexStr(pattern)+'$');
+        COOKIE_PATTERN_REGEXES.set(pattern, regex);
+    }
+    return regex;
+}
+
 export default class ConsentManager {
     config: KlaroConfig;
     store: any;
@@ -51,26 +66,32 @@ export default class ConsentManager {
         return String(this.config.storageMethod || 'cookie')
     }
 
+    // fallow-ignore-next-line unused-class-member
     get storageName(): string {
         return String(this.config.storageName || this.config.cookieName || 'klaro') // deprecated: cookieName
     }
 
+    // fallow-ignore-next-line unused-class-member
     get cookieDomain(): string | undefined {
         return typeof this.config.cookieDomain === 'string' ? this.config.cookieDomain : undefined
     }
 
+    // fallow-ignore-next-line unused-class-member
     get cookiePath(): string | undefined {
         return typeof this.config.cookiePath === 'string' ? this.config.cookiePath : undefined
     }
 
+    // fallow-ignore-next-line unused-class-member
     get cookieExpiresAfterDays(): number {
         return typeof this.config.cookieExpiresAfterDays === 'number' ? this.config.cookieExpiresAfterDays : 120
     }
 
+    // fallow-ignore-next-line unused-class-member
     get cookieSameSite(): string {
         return typeof this.config.cookieSameSite === 'string' ? this.config.cookieSameSite : 'Lax'
     }
 
+    // fallow-ignore-next-line unused-class-member
     get cookieSecure(): boolean {
         if (typeof this.config.cookieSecure === 'boolean')
             return this.config.cookieSecure
@@ -93,6 +114,7 @@ export default class ConsentManager {
             this.watchers.add(watcher)
     }
 
+    // fallow-ignore-next-line unused-class-member
     unwatch(watcher: KlaroWatcher): void {
         if (this.watchers.has(watcher))
             this.watchers.delete(watcher)
@@ -104,6 +126,7 @@ export default class ConsentManager {
         })
     }
 
+    // fallow-ignore-next-line unused-class-member
     getService(name: string): KlaroService | undefined {
         const matchingServices = this.config.services.filter((service) => service.name === name)
         if (matchingServices.length > 0)
@@ -124,9 +147,12 @@ export default class ConsentManager {
         return consent
     }
 
+    // fallow-ignore-next-line unused-class-member
     changeAll(value: boolean): number {
         let changedServices = 0
-        this.config.services.filter(service => !service.contextualConsentOnly).map(service => {
+        for (const service of this.config.services) {
+            if (service.contextualConsentOnly)
+                continue
             if(service.required || this.config.required || value) {
                 if (this.updateConsent(service.name, true))
                     changedServices++
@@ -134,7 +160,7 @@ export default class ConsentManager {
                 if (this.updateConsent(service.name, false))
                     changedServices++
             }
-        })
+        }
         return changedServices
     }
 
@@ -145,6 +171,7 @@ export default class ConsentManager {
         return changed
     }
 
+    // fallow-ignore-next-line unused-class-member
     resetConsents(): void {
         this.consents = this.defaultConsents
         this.states = {}
@@ -177,6 +204,7 @@ export default class ConsentManager {
         return this.consents
     }
 
+    // fallow-ignore-next-line unused-class-member
     saveAndApplyConsents(eventType?: string): void {
         this.saveConsents(eventType)
         this.applyConsents()
@@ -293,18 +321,20 @@ export default class ConsentManager {
             const parent = element.parentElement
             if (parent === null)
                 continue
+            const elementStyle = element.style
             const ds = dataset(element)
             const {type, src, href} = ds
             const attrs = ['href', 'src', 'type']
 
             // we handle placeholder elements here...
             if (type === 'placeholder'){
+                const style = element.style
                 if (consent){
-                    element.style.display = 'none';
-                    ds['original-display'] = element.style.display;
+                    style.display = 'none';
+                    ds['original-display'] = style.display;
                 }
                 else{
-                    element.style.display = ds['original-display'] || 'block';
+                    style.display = ds['original-display'] || 'block';
                 }
                 continue
             }
@@ -341,8 +371,9 @@ export default class ConsentManager {
                     if (ds['modified-by-klaro'] !== undefined && ds['original-display'] !== undefined) // this is already a placeholder
                         newElement.setAttribute('data-original-display', ds['original-display'])
                     else {// this is a new element we haven't touched before
-                        if (element.style.display !== undefined)
-                            newElement.setAttribute('data-original-display', element.style.display)
+                        const elementDisplay = elementStyle.display
+                        if (elementDisplay !== undefined)
+                            newElement.setAttribute('data-original-display', elementDisplay)
                         newElement.setAttribute('data-modified-by-klaro', 'yes')
                     }
                     newElement.style.display = 'none'
@@ -396,17 +427,17 @@ export default class ConsentManager {
                     if (ds.title !== undefined)
                         element.title = ds.title
                     if (ds['original-display'] !== undefined){
-                        element.style.display = ds['original-display']
+                        elementStyle.display = ds['original-display']
                     } else {
-                        element.style.removeProperty('display')
+                        elementStyle.removeProperty('display')
                     }
                 }
                 else{
                     if (ds.title !== undefined)
                         element.removeAttribute('title')
-                    if (ds['original-display'] === undefined && element.style.display !== undefined)
-                        ds['original-display'] = element.style.display
-                    element.style.display = 'none'
+                    if (ds['original-display'] === undefined && elementStyle.display !== undefined)
+                        ds['original-display'] = elementStyle.display
+                    elementStyle.display = 'none'
                     for(const attr of attrs){
                         const attrValue = ds[attr]
                         if (attrValue === undefined)
@@ -428,10 +459,6 @@ export default class ConsentManager {
         if (consent)
             return
 
-        function escapeRegexStr(str: string) {
-            return str.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&");
-        }
-
         if (service.cookies !== undefined && service.cookies.length > 0){
             const cookies = getCookies()
             for(let i=0;i<service.cookies.length;i++){
@@ -448,12 +475,8 @@ export default class ConsentManager {
                 }
                 if (cookiePattern === undefined)
                     continue
-                if (!(cookiePattern instanceof RegExp)){
-                    if (cookiePattern.startsWith('^')) // we assume this is already a regex
-                        cookiePattern = new RegExp(cookiePattern)
-                    else // we assume this is a normal string
-                        cookiePattern = new RegExp('^'+escapeRegexStr(cookiePattern)+'$')
-                }
+                if (!(cookiePattern instanceof RegExp))
+                    cookiePattern = getCookiePatternRegex(cookiePattern)
                 for(let j=0;j<cookies.length;j++){
                     const cookie = cookies[j]
                     if (cookie === undefined)
@@ -469,7 +492,7 @@ export default class ConsentManager {
                         // if no cookie domain is given, we also try to delete the cookie with
                         // domain '.[current domain]' as some services set cookies for this
                         // dotted domain explicitly (e.g. the Facebook pixel).
-                        if (cookieDomain === undefined)
+                        if (cookieDomain === undefined && typeof window !== 'undefined')
                             deleteCookie(cookie.name, cookiePath, '.'+window.location.hostname)
                     }
                 }

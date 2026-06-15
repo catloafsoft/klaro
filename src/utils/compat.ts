@@ -1,6 +1,16 @@
 export type Dataset = Record<string, string | undefined>;
 
 type LegacyStyleElement = HTMLStyleElement & { styleSheet?: { cssText: string } };
+const CSS_VARIABLE_FALLBACK_REGEXES = new Map<string, RegExp>();
+
+function getCSSVariableFallbackRegex(key: string): RegExp {
+    let regex = CSS_VARIABLE_FALLBACK_REGEXES.get(key);
+    if (regex === undefined) {
+        regex = new RegExp("([a-z0-9-]+):[^;]+;[\\s\\n]*\\1:\\s*var\\(--"+key+",\\s*[^\\)]+\\)", 'g');
+        CSS_VARIABLE_FALLBACK_REGEXES.set(key, regex);
+    }
+    return regex;
+}
 
 export function currentScript(name: string): HTMLScriptElement | null {
     // most browser support this (but alas, not IE11)
@@ -53,7 +63,7 @@ export function replaceCSSVariables(variables: Record<string, string>): void {
         if (legacyElement.styleSheet !== undefined) // IE
             css = legacyElement.styleSheet.cssText
         for(const [key, value] of Object.entries(variables)){
-            const regex = new RegExp("([a-z0-9-]+):[^;]+;[\\s\\n]*\\1:\\s*var\\(--"+key+",\\s*[^\\)]+\\)", 'g')
+            const regex = getCSSVariableFallbackRegex(key)
             css = css.replace(regex, (_: string, name: string) => `${name}: ${value}; ${name}: var(--${key}, ${value})`)
         }
         const newElement = document.createElement("style")

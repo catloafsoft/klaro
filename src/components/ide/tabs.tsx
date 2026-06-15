@@ -18,8 +18,10 @@ export const Tabs = ({ children }: TabsProps) => {
     const toggle = () => setActive((value) => !value);
 
     return (
-        <div className={'cm-tabs' + (active ? ' cm-tabs-active' : '')} onClick={toggle}>
-            <span className="cm-tabs-more">&or;</span>
+        <div className={'cm-tabs' + (active ? ' cm-tabs-active' : '')}>
+            <button type="button" className="cm-link cm-tabs-more" aria-expanded={active} onClick={toggle}>
+                &or;
+            </button>
             <ul>{children}</ul>
         </div>
     );

@@ -14,7 +14,6 @@ interface ListColumnProps {
 interface ListItemProps {
     children?: React.ReactNode;
     isCard?: boolean;
-    onClick?: () => void;
 }
 
 export const List = ({ className, children }: ListProps) => (
@@ -29,13 +28,11 @@ export const ListColumn = ({ children, size = "md" }: ListColumnProps) => (
     <div className={`cm-col cm-is-${size}`}>{children}</div>
 );
 
-export const ListItem = ({ children, isCard = true, onClick }: ListItemProps) => (
+export const ListItem = ({ children, isCard = true }: ListItemProps) => (
     <div
         className={classnames("cm-item", {
             "cm-is-card": isCard,
-            "cm-is-clickable": onClick
         })}
-        onClick={() => onClick?.()}
     >
         {children}
     </div>

@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { SearchSelect } from './search-select';
 
+const EMPTY_THEMES: string[] = [];
+
 export const ThemesSelect = ({field, disabled, prefix, config, t, updateConfig}: any) => {
     const [search, setSearch] = useState('')
     const themes: Record<string, any> = t.tv.themes
-    const values = config[field.name] || []
+    const values = (config[field.name] as string[] | undefined) || EMPTY_THEMES
     const existingThemes = useMemo(() => new Set(values), [values])
     const candidates = useMemo(() => {
         const query = search.toLowerCase()

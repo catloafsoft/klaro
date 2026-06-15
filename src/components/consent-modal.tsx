@@ -31,7 +31,7 @@ const ConsentModal = ({
     lang,
     t,
 }: ConsentModalProps) => {
-    const consentModalRef = useRef<HTMLDivElement | null>(null);
+    const consentModalRef = useRef<HTMLDialogElement | null>(null);
     const previousActiveElement = useRef<Element | null>(null);
     const { embedded } = config;
     const groupByPurpose = config.groupByPurpose !== undefined ? config.groupByPurpose : true;
@@ -134,9 +134,9 @@ const ConsentModal = ({
 
     const privacyText = ppLink ? [' ', ...([] as React.ReactNode[]).concat(t(['privacyPolicy', 'text'], { privacyPolicy: ppLink }))] : [];
     const innerModal = (
-        <div
+        <dialog
+            open
             className="cm-modal cm-klaro"
-            role="dialog"
             aria-modal={!embedded}
             aria-labelledby="klaro-consent-modal-title"
             tabIndex={-1}
@@ -173,7 +173,7 @@ const ConsentModal = ({
                     </p>
                 )}
             </div>
-        </div>
+        </dialog>
     );
 
     if (embedded)
@@ -181,7 +181,7 @@ const ConsentModal = ({
 
     return (
         <div id="cookieScreen" className="cookie-modal">
-            <div className="cm-bg" onClick={hide} />
+            <button type="button" className="cm-bg" aria-label={String(t(['close']))} onClick={hide} />
             {innerModal}
         </div>
     );

@@ -4,6 +4,8 @@ import { asTitle } from '../utils/strings';
 import Text from './text';
 import type { ConsentMap, ConsentManagerLike, KlaroConfig, KlaroService, Translator } from '../types';
 
+const EMPTY_PURPOSES: string[] = [];
+
 interface PurposeItemProps {
     allDisabled?: boolean;
     allEnabled?: boolean;
@@ -33,7 +35,7 @@ const PurposeItem = ({
     name,
     onToggle,
     onlyRequiredEnabled = false,
-    purposes = [],
+    purposes = EMPTY_PURPOSES,
     required = false,
     services,
     t,

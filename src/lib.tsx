@@ -10,7 +10,7 @@ import {t, language} from './utils/i18n'
 import {themes} from './themes'
 import {currentScript, dataset, applyDataset} from './utils/compat'
 export {version} from './utils/version'
-export {update as updateConfig} from './utils/config'
+export {updateConfigObject as updateConfig} from './utils/config'
 import './scss/klaro.scss'
 
 let defaultConfig: any
@@ -134,13 +134,12 @@ export function renderContextualConsentNotices(manager: any, tt: any, lang: stri
                 }
                 if (placeholderElement === null){
                     placeholderElement = document.createElement("DIV")
-                    placeholderElement.style.maxWidth = (trackedElement.width || trackedElement.getBoundingClientRect().width)+"px"
-                    placeholderElement.style.height = (trackedElement.height || trackedElement.getBoundingClientRect().height)+"px"
+                    const placeholderWidth = trackedElement.width || trackedElement.getBoundingClientRect().width
+                    const placeholderHeight = trackedElement.height || trackedElement.getBoundingClientRect().height
+                    placeholderElement.style.cssText = `max-width: ${placeholderWidth}px; height: ${placeholderHeight}px;${consent ? ' display: none;' : ''}`
                     applyDataset({type: 'placeholder', name: service.name}, placeholderElement)
                     // if consent is already given, we still insert an invisble placeholder that
                     // might be revealed later if the user changes the consent decision
-                    if (consent)
-                        placeholderElement.style.display = 'none'
                     trackedElement.parentElement?.insertBefore(placeholderElement, trackedElement)
                     const notice = renderComponent(<ContextualConsentNotice t={tt}
                         lang={lang}
@@ -155,8 +154,9 @@ export function renderContextualConsentNotices(manager: any, tt: any, lang: stri
                 if (trackedElement.tagName === 'IFRAME'){
                     ds['src'] = trackedElement.src
                 }
-                if (ds['modified-by-klaro'] === undefined && trackedElement.style.display === undefined)
-                    ds['original-display'] = trackedElement.style.display
+                const display = trackedElement.style.display
+                if (ds['modified-by-klaro'] === undefined && display === undefined)
+                    ds['original-display'] = display
                 ds['modified-by-klaro'] = 'yes'
                 applyDataset(ds, trackedElement)
                 if (!consent){

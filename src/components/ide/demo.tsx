@@ -3,7 +3,7 @@ import translations from '../../translations/index';
 import { t } from '../../utils/i18n';
 import { injectStyles } from '../../utils/styling';
 import { themes } from '../../themes';
-import { BaseRetractingLabelInput } from './controls';
+import { BaseRetractingLabelInput } from './controls/input';
 import App from '../app'
 import { convertToMap, update } from '../../utils/maps';
 import ConsentManager from '../../consent-manager';

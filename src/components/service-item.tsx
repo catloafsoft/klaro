@@ -4,6 +4,8 @@ import { t as tt } from '../utils/i18n';
 import Text from './text';
 import type { KlaroConfig, KlaroService, Translator } from '../types';
 
+const EMPTY_PURPOSES: string[] = [];
+
 interface ServiceItemProps extends KlaroService {
     checked: boolean;
     config: KlaroConfig;
@@ -23,7 +25,7 @@ const ServiceItem = ({
     onToggle,
     onlyRequiredEnabled,
     optOut = false,
-    purposes = [],
+    purposes = EMPTY_PURPOSES,
     required = false,
     title,
     translations,

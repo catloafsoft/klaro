@@ -9,7 +9,6 @@
   },
   "description": "A simple but powerful consent manager.",
   "devDependencies": {
-    "@babel/cli": "^7.29.7",
     "@babel/core": "^7.29.7",
     "@babel/plugin-transform-class-properties": "^7.29.7",
     "@babel/plugin-transform-object-rest-spread": "^7.29.7",
