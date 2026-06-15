@@ -14,9 +14,11 @@ interface ConsentModalProps extends BaseComponentProps {
     saveAndHide: () => void;
 }
 
-const getFocusableElements = (element: HTMLElement) => element.querySelectorAll<HTMLElement>(
-    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-);
+const getFocusableElements = (element: HTMLElement) => Array.from(
+    element.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]',
+    ),
+).filter((el) => el.getAttribute('tabindex') !== '-1');
 
 const ConsentModal = ({
     hide,

@@ -1,24 +1,27 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { SearchSelect } from './search-select';
 
 export const ThemesSelect = ({field, disabled, prefix, config, t, updateConfig}: any) => {
     const [search, setSearch] = useState('')
     const themes: Record<string, any> = t.tv.themes
-    const existingThemes = new Set(config[field.name] || [])
-    const generateInitialThemes = () => Array.from(Object.entries(themes)).filter(([k]) => !existingThemes.has(k)).map(([k, v]) => ({name: k, description: t(['themes', k, 'description']), value: t.lang === 'en' ?  `${v.title.en}` : `${v.title.en} - ${t(['themes', k, 'title'])}`}))
-    const [candidates, setCandidates] = useState(() => generateInitialThemes())
-    const updateSearch = (value: string) => {
-        const candidateThemes = Array.from(Object.entries(themes)).filter(([k]) => !existingThemes.has(k) && (value === '' || k.toLowerCase().includes(value.toLowerCase()) || t(['themes', k, 'title']).toLowerCase().includes(value.toLowerCase())))
-        let candidates = candidateThemes.map(cl => ({name: cl[0], description: t(['themes', cl[0], 'description']), value: `${t(['themes', cl[0], 'title'])}`}))
-        if (candidates.length > 10)
-            candidates = candidates.slice(0, 10)
-        setCandidates(candidates)
-        setSearch(value)
-    }
+    const values = config[field.name] || []
+    const existingThemes = useMemo(() => new Set(values), [values])
+    const candidates = useMemo(() => {
+        const query = search.toLowerCase()
+        const candidateThemes = Array.from(Object.entries(themes)).filter(([k]) => (
+            !existingThemes.has(k) &&
+            (query === '' || k.toLowerCase().includes(query) || String(t(['themes', k, 'title'])).toLowerCase().includes(query))
+        ))
+        const list = candidateThemes.map(([k, v]) => ({
+            name: k,
+            description: t(['themes', k, 'description']),
+            value: t.lang === 'en' ? `${v.title.en}` : `${v.title.en} - ${t(['themes', k, 'title'])}`,
+        }))
+        return list.length > 10 ? list.slice(0, 10) : list
+    }, [existingThemes, search, t, themes])
 
     const removeTheme = (theme: string) => {
-        updateConfig([field.name], config[field.name].filter((th: string) => th !== theme))
-        setCandidates(generateInitialThemes())
+        updateConfig([field.name], values.filter((th: string) => th !== theme))
     }
 
     const themeItems = Array.from(existingThemes).map((theme: any) => (
@@ -26,19 +29,16 @@ export const ThemesSelect = ({field, disabled, prefix, config, t, updateConfig}:
     ))
 
     const selectTheme = (theme: any) => {
-        const values = config[field.name] || []
         if (!values.find((value: string) => value === theme.name)){
-            values.push(theme.name)
-            updateConfig([field.name], values)
+            updateConfig([field.name], [...values, theme.name])
         }
         setSearch('')
-        setCandidates(generateInitialThemes())
     }
 
     return <div className="cm-theme-select">
         <ul className="cm-themes">
             {themeItems}
         </ul>
-        <SearchSelect disabled={disabled} search={search} onSelect={selectTheme} setSearch={updateSearch} candidates={candidates} label={t(['fields', ...(prefix || []), field.name, 'label'])} description={t(['fields', ...(prefix || []), field.name, 'description'])} />
+        <SearchSelect disabled={disabled} search={search} onSelect={selectTheme} setSearch={setSearch} candidates={candidates} label={t(['fields', ...(prefix || []), field.name, 'label'])} description={t(['fields', ...(prefix || []), field.name, 'description'])} />
     </div>
 }

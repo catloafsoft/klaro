@@ -1,7 +1,7 @@
 import type { KlaroConfig, Translator } from '../types';
 
 export function getPrivacyPolicyUrl(config: KlaroConfig, lang: string, t: Translator): string | undefined {
-    if (config.privacyPolicy !== undefined) {
+    if (config.privacyPolicy !== undefined && config.privacyPolicy !== null) {
         if (typeof config.privacyPolicy === 'string')
             return config.privacyPolicy;
         if (typeof config.privacyPolicy === 'object')

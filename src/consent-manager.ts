@@ -74,7 +74,7 @@ export default class ConsentManager {
     get cookieSecure(): boolean {
         if (typeof this.config.cookieSecure === 'boolean')
             return this.config.cookieSecure
-        return window.location.protocol === 'https:'
+        return typeof window !== 'undefined' && window.location.protocol === 'https:'
     }
 
     get defaultConsents(): ConsentMap {

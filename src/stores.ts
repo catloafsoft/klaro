@@ -49,6 +49,8 @@ class CookieStore implements KlaroStore {
     }
 
     get() {
+        if (typeof document === 'undefined')
+            return null;
         const cookie = getCookie(this.cookieName);
         return cookie
             ? cookie.value
@@ -56,10 +58,14 @@ class CookieStore implements KlaroStore {
     }
 
     set(value: string) {
+        if (typeof document === 'undefined')
+            return;
         return setCookie(this.cookieName, value, this.cookieExpiresAfterDays, this.cookieDomain, this.cookiePath, this.cookieSameSite, this.cookieSecure)
     }
 
     delete() {
+        if (typeof document === 'undefined')
+            return;
         return deleteCookie(this.cookieName);
     }
 }

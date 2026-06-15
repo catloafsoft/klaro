@@ -93,8 +93,13 @@ export default class KlaroApi {
         return fetch(url, { method: type, headers: headers, body: body })
             .then((response) => response.text().then((text) => {
                 let responseData: Record<string, any> = {};
-                if (text !== '')
-                    responseData = JSON.parse(text);
+                if (text !== '') {
+                    try {
+                        responseData = JSON.parse(text);
+                    } catch (error) {
+                        responseData = { text: text, error: error };
+                    }
+                }
                 if (response.status < 200 || response.status >= 300) {
                     responseData.status = response.status;
                     throw Object.assign(new Error('Klaro API request failed'), responseData);
