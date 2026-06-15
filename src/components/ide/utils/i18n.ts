@@ -1,4 +1,4 @@
-export function getValue(t, lang, key){
+export function getValue(t: any, lang: string, key: string[]) {
     let dt = t[lang]
     if (dt === undefined)
         return
@@ -10,7 +10,7 @@ export function getValue(t, lang, key){
     return dt
 }
 
-export function getFallbackValue(tv, lang, key){
+export function getFallbackValue(tv: any, lang: string, key: string[]) {
     let dt = tv
     for(const k of key){
         if (dt === undefined)

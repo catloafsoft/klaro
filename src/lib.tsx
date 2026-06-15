@@ -103,7 +103,7 @@ export function render(config: any, opts?: any){
 
     const lang = language(config)
     const configTranslations = getConfigTranslations(config)
-    const tt = (...args: any[]) => t(configTranslations, lang, config.fallbackLang || 'zz', ...args)
+    const tt = (...args: [any, ...any[]]) => t(configTranslations, lang, config.fallbackLang || 'zz', ...args)
     const app = renderComponent(<App t={tt}
         lang={lang}
         manager={manager}
@@ -191,30 +191,32 @@ function doOnceLoaded(handler: () => void){
     }
 }
 
-function getKlaroId(script: HTMLScriptElement){
+function getKlaroId(script: HTMLScriptElement): string | null {
     const klaroId = script.getAttribute('data-klaro-id')
     if (klaroId !== null)
         return klaroId
     const regexMatch = /.*\/privacy-managers\/([a-f0-9]+)\/klaro.*\.js/.exec(script.src)
     if (regexMatch !== null)
-        return regexMatch[1]
+        return regexMatch[1] || null
     return null
 }
 
-function getKlaroApiUrl(script: HTMLScriptElement){
+function getKlaroApiUrl(script: HTMLScriptElement): string | null {
     const klaroApiUrl = script.getAttribute('data-klaro-api-url')
     if (klaroApiUrl !== null)
         return klaroApiUrl
     const regexMatch = /(http(?:s)?:\/\/[^/]+)\/v1\/privacy-managers\/([a-f0-9]+)\/klaro.*\.js/.exec(script.src)
     if (regexMatch !== null)
-        return regexMatch[1]
+        return regexMatch[1] || null
     return null
 }
 
-function getKlaroConfigName(hashParams: Map<string, string | boolean | undefined>, script: HTMLScriptElement){
+function getKlaroConfigName(hashParams: Map<string, string | boolean | undefined>, script: HTMLScriptElement): string {
     // hash parameters always win
     if (hashParams.has('klaro-config')){
-        return hashParams.get('klaro-config')
+        const hashConfigName = hashParams.get('klaro-config')
+        if (typeof hashConfigName === 'string')
+            return hashConfigName
     }
     // afterwards we check the script tag
     const klaroConfigName = script.getAttribute('data-klaro-config')

@@ -1,5 +1,5 @@
-export function getPurposes(config) {
-    const purposes = new Set([]);
+export function getPurposes(config: any): string[] {
+    const purposes = new Set<string>();
     for (let i = 0; i < config.services.length; i++) {
         const servicePurposes = config.services[i].purposes || [];
         for (let j = 0; j < servicePurposes.length; j++)
@@ -8,11 +8,12 @@ export function getPurposes(config) {
     return Array.from(purposes);
 }
 
-export function update(ed, d, overwrite) {
-    if (overwrite === undefined) overwrite = true;
+export function update(ed: Record<string, any>, d: Record<string, any>, overwrite = true): Record<string, any> {
     const keys = Object.keys(d);
     for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
+        if (key === undefined)
+            continue;
         const vd = d[key];
         const ved = ed[key];
         if (typeof vd === 'string') {

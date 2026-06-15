@@ -1,11 +1,11 @@
 import { replaceCSSVariables } from "./compat"
 
-export function injectStyles(config, themes, element){
+export function injectStyles(config: any, themes: Record<string, Record<string, any>>, element?: HTMLElement | null): void {
 
     if (config.styling === undefined)
         return
 
-    let styling = Object.assign({}, config.styling)
+    let styling: Record<string, string | string[]> = Object.assign({}, config.styling)
 
     if (styling.theme !== undefined){
         let styleThemes = styling.theme
@@ -32,23 +32,23 @@ export function injectStyles(config, themes, element){
         for(const [key, value] of Object.entries(config.styling)){
             if (key === 'theme')
                 continue
-            styling[key] = value
+            styling[key] = value as string
         }
 
     }
 
-    if (element === undefined)
+    if (element === undefined || element === null)
         element = document.documentElement;
 
     // in modern browsers we can just set the CSS variables
     for(const [key, value] of Object.entries(styling)){
-        element.style.setProperty('--'+key, value)
+        element.style.setProperty('--'+key, String(value))
     }
 
-    if (window.document.documentMode && element === document.documentElement) {
+    if ((window.document as Document & { documentMode?: unknown }).documentMode && element === document.documentElement) {
         // we dynamically replace the CSS variables in the CSS files as IE
         // cannot handle them... Sigh.
-        replaceCSSVariables(styling)
+        replaceCSSVariables(styling as Record<string, string>)
     }
 
 }

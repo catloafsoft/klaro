@@ -103,7 +103,10 @@ export default [
             'no-undef': 'off',
             'no-unused-vars': 'off',
             'react/no-unused-prop-types': 'off',
-            '@typescript-eslint/no-unused-vars': 'error',
+            '@typescript-eslint/no-unused-vars': ['error', {
+                argsIgnorePattern: '^_',
+                varsIgnorePattern: '^_',
+            }],
         },
     },
 ];

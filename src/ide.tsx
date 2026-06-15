@@ -48,7 +48,7 @@ const IDEShell = ({ config, t }: { config: any; t: any }) => {
 export function renderIDE(config: any){
     const lang = language(config)
     const element = getElement(config, true)
-    const tt = (...args: any[]) => t(trans, lang, config.fallbackLang || 'en', ...args)
+    const tt = (...args: [any, ...any[]]) => t(trans, lang, config.fallbackLang || 'en', ...args)
     const ide = renderComponent(<IDEShell t={tt} config={config} />, element)
     return ide
 }

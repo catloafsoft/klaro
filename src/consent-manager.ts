@@ -1,20 +1,34 @@
 import {getCookies, deleteCookie} from './utils/cookies'
 import {dataset, applyDataset} from './utils/compat'
 import stores, { SessionStorageStore } from './stores'
+import type { ConsentMap, KlaroConfig, KlaroService, KlaroWatcher } from './types'
 
 export default class ConsentManager {
+    config: KlaroConfig;
+    store: any;
+    auxiliaryStore: any;
+    consents: ConsentMap;
+    confirmed: boolean;
+    changed: boolean;
+    states: ConsentMap;
+    initialized: Record<string, boolean>;
+    executedOnce: Record<string, boolean>;
+    savedConsents: ConsentMap;
+    watchers: Set<KlaroWatcher>;
 
-    constructor(config, store, auxiliaryStore){
+    constructor(config: KlaroConfig, store?: any, auxiliaryStore?: any){
         this.config = config // the configuration
 
         if (store !== undefined)
             this.store = store
-        else
-            this.store = new stores[this.storageMethod](this)
+        else {
+            const Store = stores[this.storageMethod as keyof typeof stores] || stores.cookie
+            this.store = new Store(this)
+        }
 
         // we fall back to the cookie-based store if the store is undefined
         if (this.store === undefined)
-            this.store = stores['cookie']
+            this.store = new stores.cookie(this)
 
         if (auxiliaryStore !== undefined)
             this.auxiliaryStore = auxiliaryStore
@@ -33,72 +47,76 @@ export default class ConsentManager {
         this.savedConsents = {...this.consents}
     }
 
-    get storageMethod(){
-        return this.config.storageMethod || 'cookie'
+    get storageMethod(): string {
+        return String(this.config.storageMethod || 'cookie')
     }
 
-    get storageName(){
-        return this.config.storageName || this.config.cookieName || 'klaro' // deprecated: cookieName
+    get storageName(): string {
+        return String(this.config.storageName || this.config.cookieName || 'klaro') // deprecated: cookieName
     }
 
-    get cookieDomain(){
-        return this.config.cookieDomain || undefined
+    get cookieDomain(): string | undefined {
+        return typeof this.config.cookieDomain === 'string' ? this.config.cookieDomain : undefined
     }
 
-    get cookiePath(){
-        return this.config.cookiePath || undefined
+    get cookiePath(): string | undefined {
+        return typeof this.config.cookiePath === 'string' ? this.config.cookiePath : undefined
     }
 
-    get cookieExpiresAfterDays(){
-        return this.config.cookieExpiresAfterDays || 120
+    get cookieExpiresAfterDays(): number {
+        return typeof this.config.cookieExpiresAfterDays === 'number' ? this.config.cookieExpiresAfterDays : 120
     }
 
-    get cookieSameSite(){
-        return this.config.cookieSameSite || 'Lax'
+    get cookieSameSite(): string {
+        return typeof this.config.cookieSameSite === 'string' ? this.config.cookieSameSite : 'Lax'
     }
 
-    get cookieSecure(){
-        if (this.config.cookieSecure !== undefined)
+    get cookieSecure(): boolean {
+        if (typeof this.config.cookieSecure === 'boolean')
             return this.config.cookieSecure
         return window.location.protocol === 'https:'
     }
 
-    get defaultConsents(){
-        const consents = {}
+    get defaultConsents(): ConsentMap {
+        const consents: ConsentMap = {}
         for(let i=0;i<this.config.services.length;i++){
             const service = this.config.services[i]
+            if (service === undefined)
+                continue
             consents[service.name] = this.getDefaultConsent(service)
         }
         return consents
     }
 
-    watch(watcher){
+    watch(watcher: KlaroWatcher): void {
         if (!this.watchers.has(watcher))
             this.watchers.add(watcher)
     }
 
-    unwatch(watcher){
+    unwatch(watcher: KlaroWatcher): void {
         if (this.watchers.has(watcher))
             this.watchers.delete(watcher)
     }
 
-    notify(name, data){
+    notify(name: string, data?: unknown, _extra?: unknown): void {
         this.watchers.forEach((watcher) => {
             watcher.update(this, name, data)
         })
     }
 
-    getService(name){
-        const matchingServices = this.config.services.filter(service=>service.name === name)
+    getService(name: string): KlaroService | undefined {
+        const matchingServices = this.config.services.filter((service) => service.name === name)
         if (matchingServices.length > 0)
             return matchingServices[0]
         return undefined
     }
 
-    getDefaultConsent(service){
-        if (this.config.respectGlobalPrivacyControl && navigator.globalPrivacyControl && !service.required)
+    getDefaultConsent(service: KlaroService): boolean {
+        if (this.config.respectGlobalPrivacyControl && (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl && !service.required)
             return false
-        let consent = service.default || service.required
+        let consent = service.default as boolean | undefined
+        if (consent === undefined)
+            consent = service.required
         if (consent === undefined)
             consent = this.config.default
         if (consent === undefined)
@@ -106,7 +124,7 @@ export default class ConsentManager {
         return consent
     }
 
-    changeAll(value){
+    changeAll(value: boolean): number {
         let changedServices = 0
         this.config.services.filter(service => !service.contextualConsentOnly).map(service => {
             if(service.required || this.config.required || value) {
@@ -120,14 +138,14 @@ export default class ConsentManager {
         return changedServices
     }
 
-    updateConsent(name, value){
+    updateConsent(name: string, value: boolean): boolean {
         const changed = (this.consents[name] || false) !== value
         this.consents[name] = value
         this.notify('consents', this.consents)
         return changed
     }
 
-    resetConsents(){
+    resetConsents(): void {
         this.consents = this.defaultConsents
         this.states = {}
         this.confirmed = false
@@ -137,11 +155,11 @@ export default class ConsentManager {
         this.notify('consents', this.consents)
     }
 
-    getConsent(name){
+    getConsent(name: string): boolean {
         return this.consents[name] || false
     }
 
-    loadConsents(){
+    loadConsents(): ConsentMap {
         const consentData = this.store.get();
         if (consentData !== null){
             try {
@@ -159,13 +177,13 @@ export default class ConsentManager {
         return this.consents
     }
 
-    saveAndApplyConsents(eventType){
+    saveAndApplyConsents(eventType?: string): void {
         this.saveConsents(eventType)
         this.applyConsents()
     }
 
-    changedConsents(){
-        const cc = {}
+    changedConsents(): ConsentMap {
+        const cc: ConsentMap = {}
         for(const [k, v] of Object.entries(this.consents)){
             if (this.savedConsents[k] !== v)
                 cc[k] = v
@@ -173,7 +191,7 @@ export default class ConsentManager {
         return cc
     }
 
-    saveConsents(eventType){
+    saveConsents(eventType?: string): void {
         const v = encodeURIComponent(JSON.stringify(this.consents))
         this.store.set(v);
         this.confirmed = true
@@ -183,9 +201,9 @@ export default class ConsentManager {
         this.notify('saveConsents', {changes: changes, consents: this.consents, type: eventType || 'script'})
     }
 
-    applyConsents(dryRun, interactive, serviceName){
+    applyConsents(dryRun?: boolean, interactive?: boolean, serviceName?: string): number {
 
-        function executeHandler(handler, opts){
+        function executeHandler(handler: unknown, opts: Record<string, unknown>) {
             if (handler === undefined)
                 return
             let handlerFunction
@@ -203,6 +221,8 @@ export default class ConsentManager {
         // we make sure all services are properly initialized
         for(let i=0;i<this.config.services.length;i++){
             const service = this.config.services[i]
+            if (service === undefined)
+                continue
             if (serviceName !== undefined && serviceName !== service.name)
                 continue
             const vars = service.vars || {}
@@ -216,15 +236,17 @@ export default class ConsentManager {
 
         for(let i=0;i<this.config.services.length;i++){
             const service = this.config.services[i]
+            if (service === undefined)
+                continue
             if (serviceName !== undefined && serviceName !== service.name)
                 continue
             const state = this.states[service.name]
             const vars = service.vars || {}
-            const optOut = (service.optOut !== undefined ? service.optOut : (this.config.optOut || false))
-            const required = (service.required !== undefined ? service.required : (this.config.required || false))
+            const optOut = service.optOut !== undefined ? Boolean(service.optOut) : Boolean(this.config.optOut || false)
+            const required = service.required !== undefined ? Boolean(service.required) : Boolean(this.config.required || false)
             //opt out and required services are always treated as confirmed
-            const confirmed = this.confirmed || optOut || dryRun || interactive
-            const consent = (this.getConsent(service.name) && confirmed) || required
+            const confirmed = Boolean(this.confirmed || optOut || dryRun || interactive)
+            const consent = Boolean((this.getConsent(service.name) && confirmed) || required)
             const handlerOpts = {service: service, config: this.config, vars: vars, consents: this.consents, confirmed: this.confirmed}
 
             if (state !== consent)
@@ -239,11 +261,11 @@ export default class ConsentManager {
             this.updateServiceStorage(service, consent)
 
             // we execute the service callback (if one is defined)
-            if (service.callback !== undefined)
+            if (typeof service.callback === 'function')
                 service.callback(consent, service)
 
             // we execute the global callback (if one is defined)
-            if (this.config.callback !== undefined)
+            if (typeof this.config.callback === 'function')
                 this.config.callback(consent, service)
 
             this.states[service.name] = consent
@@ -252,7 +274,7 @@ export default class ConsentManager {
         return changedServices
     }
 
-    updateServiceElements(service, consent){
+    updateServiceElements(service: KlaroService, consent: boolean): void {
 
         // we make sure we execute this service only once if the option is set
         if (consent){
@@ -264,9 +286,13 @@ export default class ConsentManager {
         const elements = document.querySelectorAll("[data-name='"+service.name+"']")
         for(let i=0;i<elements.length;i++){
 
-            const element = elements[i]
+            const element = elements[i] as any
+            if (element === undefined)
+                continue
 
             const parent = element.parentElement
+            if (parent === null)
+                continue
             const ds = dataset(element)
             const {type, src, href} = ds
             const attrs = ['href', 'src', 'type']
@@ -292,11 +318,12 @@ export default class ConsentManager {
                 }
                 // we create a new script instead of updating the node in
                 // place, as the script won't start correctly otherwise
-                const newElement = document.createElement(element.tagName)
+                const newElement = document.createElement(element.tagName) as any
                 for(const attribute of element.attributes){
                     if (attribute.name === 'style') {
                         const [styleProperty, styleValue] = attribute.value.split(':')
-                        newElement.style[styleProperty.trim()] = styleValue.trim()
+                        if (styleProperty !== undefined && styleValue !== undefined)
+                            newElement.style[styleProperty.trim()] = styleValue.trim()
                     } else {
                         newElement.setAttribute(attribute.name, attribute.value)
                     }
@@ -332,7 +359,7 @@ export default class ConsentManager {
                 }
                 // we create a new script instead of updating the node in
                 // place, as the script won't start correctly otherwise
-                const newElement = document.createElement(element.tagName)
+                const newElement = document.createElement(element.tagName) as any
                 for(const attribute of element.attributes){
                     newElement.setAttribute(attribute.name, attribute.value)
                 }
@@ -396,27 +423,28 @@ export default class ConsentManager {
 
     }
 
-    updateServiceStorage(service, consent){
+    updateServiceStorage(service: KlaroService, consent: boolean): void {
 
         if (consent)
             return
 
-        function escapeRegexStr(str) {
+        function escapeRegexStr(str: string) {
             return str.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&");
         }
 
         if (service.cookies !== undefined && service.cookies.length > 0){
             const cookies = getCookies()
             for(let i=0;i<service.cookies.length;i++){
-                let cookiePattern = service.cookies[i]
-                let cookiePath, cookieDomain
+                let cookiePattern: any = service.cookies[i]
+                let cookiePath: string | undefined
+                let cookieDomain: string | undefined
                 if (cookiePattern instanceof Array){
                     [cookiePattern, cookiePath, cookieDomain] = cookiePattern
                 } else if (cookiePattern instanceof Object && !(cookiePattern instanceof RegExp)){
                     const cp = cookiePattern
                     cookiePattern = cp.pattern
-                    cookiePath = cp.path
-                    cookieDomain = cp.domain
+                    cookiePath = cp.path as string | undefined
+                    cookieDomain = cp.domain as string | undefined
                 }
                 if (cookiePattern === undefined)
                     continue
@@ -428,6 +456,8 @@ export default class ConsentManager {
                 }
                 for(let j=0;j<cookies.length;j++){
                     const cookie = cookies[j]
+                    if (cookie === undefined)
+                        continue
                     const match = cookiePattern.exec(cookie.name)
                     if (match !== null){
                         // eslint-disable-next-line no-console
@@ -447,7 +477,7 @@ export default class ConsentManager {
         }
     }
 
-    _checkConsents(){
+    _checkConsents(): void {
         let complete = true
         const services = new Set(this.config.services.map((service)=>{return service.name}))
         const consents = new Set(Object.keys(this.consents))

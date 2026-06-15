@@ -1,7 +1,18 @@
 import {getCookie, setCookie, deleteCookie} from './utils/cookies'
+import type { KlaroStore } from './types';
 
+interface StoreManager {
+    storageName: string;
+    cookieDomain?: string;
+    cookiePath?: string;
+    cookieExpiresAfterDays?: number;
+    cookieSameSite?: string;
+    cookieSecure?: boolean;
+}
 
-export class TestStore {
+export class TestStore implements KlaroStore {
+    value: string | null;
+
     constructor(){
         this.value = null
     }
@@ -10,7 +21,7 @@ export class TestStore {
         return this.value
     }
 
-    set(value) {
+    set(value: string) {
         this.value = value;
     }
 
@@ -20,8 +31,15 @@ export class TestStore {
     }
 }
 
-class CookieStore {
-    constructor(manager) {
+class CookieStore implements KlaroStore {
+    cookieName: string;
+    cookieDomain?: string;
+    cookiePath?: string;
+    cookieExpiresAfterDays?: number;
+    cookieSameSite?: string;
+    cookieSecure?: boolean;
+
+    constructor(manager: StoreManager) {
         this.cookieName = manager.storageName
         this.cookieDomain = manager.cookieDomain
         this.cookiePath = manager.cookiePath
@@ -37,7 +55,7 @@ class CookieStore {
             : null;
     }
 
-    set(value) {
+    set(value: string) {
         return setCookie(this.cookieName, value, this.cookieExpiresAfterDays, this.cookieDomain, this.cookiePath, this.cookieSameSite, this.cookieSecure)
     }
 
@@ -46,8 +64,11 @@ class CookieStore {
     }
 }
 
-class StorageStore {
-    constructor(manager, handle) {
+class StorageStore implements KlaroStore {
+    key: string;
+    handle: Storage;
+
+    constructor(manager: StoreManager, handle: Storage) {
         this.key = manager.storageName;
         this.handle = handle
     }
@@ -61,7 +82,7 @@ class StorageStore {
         }
     }
 
-    getWithKey(key) {
+    getWithKey(key: string) {
         try {
             return this.handle.getItem(key);
         } catch (e) {
@@ -70,7 +91,7 @@ class StorageStore {
         }
     }
 
-    set(value) {
+    set(value: string) {
         try {
             return this.handle.setItem(this.key, value)
         } catch (e) {
@@ -78,9 +99,9 @@ class StorageStore {
         }
     }
 
-    setWithKey(key, value) {
+    setWithKey(key: string, value: string | boolean) {
         try {
-            return this.handle.setItem(key, value)
+            return this.handle.setItem(key, String(value))
         } catch (e) {
             console.warn('Klaro storage is unavailable:', e);
         }
@@ -94,7 +115,7 @@ class StorageStore {
         }
     }
 
-    deleteWithKey(key) {
+    deleteWithKey(key: string) {
         try {
             return this.handle.removeItem(key);
         } catch (e) {
@@ -104,13 +125,13 @@ class StorageStore {
 }
 
 export class LocalStorageStore extends StorageStore {
-    constructor(manager){
+    constructor(manager: StoreManager){
         super(manager, localStorage)
     }
 }
 
 export class SessionStorageStore extends StorageStore {
-    constructor(manager){
+    constructor(manager: StoreManager){
         super(manager, sessionStorage)
     }
 }

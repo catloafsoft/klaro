@@ -44,7 +44,7 @@ export const Demo = ({t: ttt, config}: any) => {
     const auxiliaryTestStore = new TestStore()
     const manager = new ConsentManager(config, testStore, auxiliaryTestStore);
     const trans = getTranslations(config)
-    const tt = (...args: any[]) => t(trans, lang, config.fallbackLang || 'zz', ...args)
+    const tt = (...args: [any, ...any[]]) => t(trans, lang, config.fallbackLang || 'zz', ...args)
     const languages = config.languages.map((language: string) => <option key={language} value={language}>{ttt(['languages', language])} ({language})</option>)
     const testOnSite = () => {
         window.open(siteUrl+`#klaro-testing&klaro-config=${config.name}`)

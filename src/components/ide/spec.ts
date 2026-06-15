@@ -106,14 +106,14 @@ const KlaroConfigSpec = {
         },
         {
             name: 'cookieDomain',
-            applicable: (config) => config.storageMethod === 'cookie',
+            applicable: (config: any) => config.storageMethod === 'cookie',
             control: 'RetractingLabelInput',
             validators: [],
             default: '',
         },
         {
             name: 'cookiePath',
-            applicable: (config) => config.storageMethod === 'cookie',
+            applicable: (config: any) => config.storageMethod === 'cookie',
             control: 'RetractingLabelInput',
             validators: [],
             default: '',
@@ -138,7 +138,7 @@ const KlaroConfigSpec = {
         },
         {
             name: 'cookieExpiresAfterDays',
-            applicable: (config) => config.storageMethod === 'cookie',
+            applicable: (config: any) => config.storageMethod === 'cookie',
             control: 'Range',
             controlProps: {
                 min: 0,

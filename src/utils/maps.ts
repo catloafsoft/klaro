@@ -1,5 +1,5 @@
-export function convertToMap(d) {
-    const dm = new Map([]);
+export function convertToMap(d: Record<string, any>): Map<string, any> {
+    const dm = new Map<string, any>();
     for (const key of Object.keys(d)) {
         const value = d[key];
         if (!(typeof key === 'string')) continue;
@@ -12,21 +12,19 @@ export function convertToMap(d) {
     return dm;
 }
 
-export function update(d, ed, overwrite, clone) {
-    const assign = (d, key, value) => {
+export function update(d: Map<any, any>, ed: Map<any, any>, overwrite = true, clone = false): Map<any, any> {
+    const assign = (target: Map<any, any>, key: any, value: any) => {
         if (value instanceof Map) {
-            const map = new Map([]);
+            const map = new Map<any, any>();
             //we deep-clone the map
             update(map, value, true, false);
-            d.set(key, map);
-        } else d.set(key, value);
+            target.set(key, map);
+        } else target.set(key, value);
     };
 
     if (!(ed instanceof Map) || !(d instanceof Map))
         throw new Error('Parameters are not maps!');
-    if (overwrite === undefined) overwrite = true;
-    if (clone === undefined) clone = false;
-    if (clone) d = new d.constructor(d);
+    if (clone) d = new Map(d);
     for (const key of ed.keys()) {
         const value = ed.get(key);
         const dvalue = d.get(key);

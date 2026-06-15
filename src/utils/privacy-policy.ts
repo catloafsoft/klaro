@@ -1,4 +1,6 @@
-export function getPrivacyPolicyUrl(config, lang, t) {
+import type { KlaroConfig, Translator } from '../types';
+
+export function getPrivacyPolicyUrl(config: KlaroConfig, lang: string, t: Translator): string | undefined {
     if (config.privacyPolicy !== undefined) {
         if (typeof config.privacyPolicy === 'string')
             return config.privacyPolicy;
@@ -8,5 +10,5 @@ export function getPrivacyPolicyUrl(config, lang, t) {
     const ppUrl = t(['!', 'privacyPolicyUrl'], { lang: lang });
     if (Array.isArray(ppUrl))
         return ppUrl.join('');
-    return ppUrl;
+    return typeof ppUrl === 'string' ? ppUrl : undefined;
 }

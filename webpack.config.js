@@ -20,7 +20,7 @@ module.exports = (env, argv) => {
   let config2 = {
     ...config,
     entry: {
-      'klaro-no-translations': path.join(SRC_DIR, 'klaro-no-translations.js'),
+      'klaro-no-translations': path.join(SRC_DIR, 'klaro-no-translations.ts'),
     },
     output: {
       ...config.output,

@@ -1,13 +1,17 @@
 import { version } from './version';
 
 export default class KlaroApi {
-    constructor(url, id, opts) {
-        this.url = url;
+    url: string;
+    id: string;
+    opts: Record<string, any>;
+
+    constructor(url: string | null | undefined, id: string, opts?: Record<string, any>) {
+        this.url = url || '';
         this.id = id;
         this.opts = Object.assign({}, opts);
     }
 
-    getLocationData(config) {
+    getLocationData(config: Record<string, any>) {
         const recordsConfig = config.records || {};
         const savePathname =
             recordsConfig.savePathname !== undefined
@@ -21,14 +25,14 @@ export default class KlaroApi {
         };
     }
 
-    getUserData() {
+    getUserData(..._args: unknown[]) {
         return {
             client_version: version(),
             client_name: 'klaro:web',
         };
     }
 
-    getBaseConsentData(config) {
+    getBaseConsentData(config: Record<string, any>) {
         return {
             location_data: this.getLocationData(config),
             user_data: this.getUserData(config),
@@ -36,7 +40,7 @@ export default class KlaroApi {
     }
 
     // fallow-ignore-next-line unused-class-member
-    update(notifier, name, data) {
+    update(notifier: any, name: string, data: any) {
         if (name === 'saveConsents') {
             if (data.type === 'save' && Object.keys(data.changes).length === 0)
                 return; // save event with no changes
@@ -64,14 +68,16 @@ export default class KlaroApi {
         }
     }
 
-    apiRequest(type, path, data, contentType) {
-        let body;
+    apiRequest(type: string, path: string, data?: Record<string, any>, contentType?: string): Promise<any> {
+        let body: string | undefined;
         let url = this.url + path;
 
         if (data !== undefined) {
             if (type === 'GET') {
                 const query = new URLSearchParams(
-                    Object.entries(data).filter(([, value]) => value !== undefined)
+                    Object.entries(data)
+                        .filter(([, value]) => value !== undefined)
+                        .map(([key, value]) => [key, String(value)])
                 ).toString();
                 if (query !== '')
                     url += (url.indexOf('?') === -1 ? '?' : '&') + query;
@@ -80,13 +86,13 @@ export default class KlaroApi {
             }
         }
 
-        const headers = {};
+        const headers: Record<string, string> = {};
         if (body !== undefined)
             headers['Content-Type'] = contentType || 'application/json;charset=UTF-8';
 
         return fetch(url, { method: type, headers: headers, body: body })
             .then((response) => response.text().then((text) => {
-                let responseData = {};
+                let responseData: Record<string, any> = {};
                 if (text !== '')
                     responseData = JSON.parse(text);
                 if (response.status < 200 || response.status >= 300) {
@@ -102,7 +108,7 @@ export default class KlaroApi {
             });
     }
 
-    submitConsentData(consentData) {
+    submitConsentData(consentData: Record<string, any>) {
         return this.apiRequest(
             'POST',
             '/v1/privacy-managers/' + this.id + '/submit',
@@ -114,7 +120,7 @@ export default class KlaroApi {
     /*
     Load a specific Klaro config from the API.
     */
-    loadConfig(name) {
+    loadConfig(name: string) {
         return this.apiRequest(
             'GET',
             '/v1/privacy-managers/' + this.id + '/config.json',

@@ -1,4 +1,4 @@
-const format = (str, ...rest) => {
+const format = (str: string, ...rest: any[]): any[] => {
     const t = typeof rest[0];
     let args;
     if (rest.length === 0) args = {};
@@ -14,14 +14,15 @@ const format = (str, ...rest) => {
     while (s.length > 0) {
         const m = s.match(/\{(?!\{)([\w\d]+)\}(?!\})/);
         if (m !== null) {
-            const left = s.substr(0, m.index);
-            s = s.substr(m.index + m[0].length);
-            const n = parseInt(m[1]);
+            const left = s.substr(0, m.index || 0);
+            s = s.substr((m.index || 0) + m[0].length);
+            const token = m[1] || '';
+            const n = parseInt(token);
             splits.push(left);
             // eslint-disable-next-line eqeqeq
             if (n != n) {
                 // not a number
-                splits.push(args[m[1]]);
+                splits.push(args[token]);
             } else {
                 // a numbered argument
                 splits.push(args[n]);
@@ -34,7 +35,7 @@ const format = (str, ...rest) => {
     return splits;
 };
 
-export function language(config) {
+export function language(config?: any): string {
     // if a language is given in the config we always return that
     if (config !== undefined && config.lang !== undefined && config.lang !== 'zz') return config.lang;
     const lang = (
@@ -47,17 +48,18 @@ export function language(config) {
     if (result === null) {
         return lang;
     }
-    return result[1];
+    return result[1] || lang;
 }
 
-function hget(d, key, defaultValue) {
+function hget(d: any, key: string | string[], defaultValue?: any): any {
     let kl = key;
     if (!Array.isArray(kl)) kl = [kl];
     let cv = d;
     for (let i = 0; i < kl.length; i++) {
         if (cv === undefined) return defaultValue;
-        if (kl[i] !== undefined && kl[i].endsWith('?')) {
-            const kle = kl[i].slice(0, kl[i].length - 1);
+        const keyPart = kl[i];
+        if (keyPart !== undefined && keyPart.endsWith('?')) {
+            const kle = keyPart.slice(0, keyPart.length - 1);
             let cvn;
             if (cv instanceof Map) cvn = cv.get(kle);
             else cvn = cv[kle];
@@ -65,8 +67,8 @@ function hget(d, key, defaultValue) {
                 // we only assign it if the value exists
                 cv = cvn;
         } else {
-            if (cv instanceof Map) cv = cv.get(kl[i]);
-            else cv = cv[kl[i]];
+            if (cv instanceof Map) cv = cv.get(kl[i] as string);
+            else cv = cv[kl[i] as string];
         }
     }
     if (cv === undefined || !(typeof cv === "string")) return defaultValue;
@@ -75,7 +77,7 @@ function hget(d, key, defaultValue) {
     return cv;
 }
 
-export function t(trans, lang, fallbackLang, key, ...params) {
+export function t(trans: any, lang: string, fallbackLang: string | undefined, key: string | string[], ...params: any[]): any {
     let kl = key;
     let returnUndefined = false;
     if (kl[0] === '!') {
