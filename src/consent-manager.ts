@@ -66,32 +66,26 @@ export default class ConsentManager {
         return String(this.config.storageMethod || 'cookie')
     }
 
-    // fallow-ignore-next-line unused-class-member
     get storageName(): string {
         return String(this.config.storageName || this.config.cookieName || 'klaro') // deprecated: cookieName
     }
 
-    // fallow-ignore-next-line unused-class-member
     get cookieDomain(): string | undefined {
         return typeof this.config.cookieDomain === 'string' ? this.config.cookieDomain : undefined
     }
 
-    // fallow-ignore-next-line unused-class-member
     get cookiePath(): string | undefined {
         return typeof this.config.cookiePath === 'string' ? this.config.cookiePath : undefined
     }
 
-    // fallow-ignore-next-line unused-class-member
     get cookieExpiresAfterDays(): number {
         return typeof this.config.cookieExpiresAfterDays === 'number' ? this.config.cookieExpiresAfterDays : 120
     }
 
-    // fallow-ignore-next-line unused-class-member
     get cookieSameSite(): string {
         return typeof this.config.cookieSameSite === 'string' ? this.config.cookieSameSite : 'Lax'
     }
 
-    // fallow-ignore-next-line unused-class-member
     get cookieSecure(): boolean {
         if (typeof this.config.cookieSecure === 'boolean')
             return this.config.cookieSecure
@@ -114,7 +108,6 @@ export default class ConsentManager {
             this.watchers.add(watcher)
     }
 
-    // fallow-ignore-next-line unused-class-member
     unwatch(watcher: KlaroWatcher): void {
         if (this.watchers.has(watcher))
             this.watchers.delete(watcher)
@@ -126,7 +119,6 @@ export default class ConsentManager {
         })
     }
 
-    // fallow-ignore-next-line unused-class-member
     getService(name: string): KlaroService | undefined {
         const matchingServices = this.config.services.filter((service) => service.name === name)
         if (matchingServices.length > 0)
@@ -147,7 +139,6 @@ export default class ConsentManager {
         return consent
     }
 
-    // fallow-ignore-next-line unused-class-member
     changeAll(value: boolean): number {
         let changedServices = 0
         for (const service of this.config.services) {
@@ -171,7 +162,6 @@ export default class ConsentManager {
         return changed
     }
 
-    // fallow-ignore-next-line unused-class-member
     resetConsents(): void {
         this.consents = this.defaultConsents
         this.states = {}
@@ -204,7 +194,6 @@ export default class ConsentManager {
         return this.consents
     }
 
-    // fallow-ignore-next-line unused-class-member
     saveAndApplyConsents(eventType?: string): void {
         this.saveConsents(eventType)
         this.applyConsents()

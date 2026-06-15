@@ -1,10 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
   "entry": [
-    "src/klaro.js",
-    "src/klaro-no-translations.js",
-    "src/consent-manager.js",
-    "src/translations.js",
+    "src/klaro.ts",
+    "src/klaro-no-translations.ts",
+    "src/consent-manager.ts",
+    "src/translations.ts",
     "src/ide.tsx",
     "examples/klaro-and-webpack/src/index.js",
     "webpack.config.js",
@@ -34,11 +34,11 @@
       "exports": ["*"]
     },
     {
-      "file": "src/utils/config.js",
+      "file": "src/utils/config.ts",
       "exports": ["*"]
     },
     {
-      "file": "src/utils/maps.js",
+      "file": "src/utils/maps.ts",
       "exports": ["*"]
     },
     {

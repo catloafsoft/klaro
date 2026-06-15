@@ -12,7 +12,7 @@ Always prefix shell, build, and test commands with `rtk`.
 
 - React/Preact UI code lives in `.tsx` function components.
 - Keep `tsconfig.json` strict and run `pnpm run typecheck` after TypeScript or TSX changes.
-- Avoid class-style React components and legacy `react-dom/render`; use the renderer adapter in `src/utils/render.js`.
+- Avoid class-style React components and legacy `react-dom/render`; use the renderer adapter in `src/utils/render.ts`.
 - Preserve public UMD/browser entry points and bundle names in `dist`.
 
 ## Verification

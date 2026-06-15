@@ -37,7 +37,7 @@ let config = {
                 },
             },
             {
-                test: /\.yaml|yml$/,
+                test: /\.(ya?ml)$/,
                 use: ['yaml-loader'],
             },
             {
