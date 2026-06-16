@@ -16,6 +16,8 @@ import gl from './gl.yml';
 import hu from './hu.yml';
 import hr from './hr.yml';
 import it from './it.yml';
+import ja from './ja.yml';
+import ko from './ko.yml';
 import nl from './nl.yml';
 import no from './no.yml';
 import oc from './oc.yml';
@@ -43,6 +45,8 @@ export default {
     hu,
     hr,
     it,
+    ja,
+    ko,
     nl,
     no,
     oc,

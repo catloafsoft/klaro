@@ -1,0 +1,61 @@
+acceptAll: すべて同意
+acceptSelected: 選択した項目に同意
+close: 閉じる
+consentModal:
+  description: ここでは、このウェブサイトで使用したいサービスを確認し、カスタマイズできます。必要に応じてサービスを有効または無効にしてください。
+  privacyPolicy:
+    name: プライバシーポリシー
+    text: 詳細については、{privacyPolicy}をご確認ください。
+  title: 使用したいサービス
+consentNotice:
+  changeDescription: 前回の訪問以降に変更がありました。あらためて同意を確認してください。
+  description: こんにちは。{purposes}のために追加のサービスを有効にしてもよろしいですか？同意は後からいつでも変更または撤回できます。
+  imprint:
+    name: 運営者情報
+  learnMore: 自分で選択する
+  privacyPolicy:
+    name: プライバシーポリシー
+  testing: テストモードです！
+contextualConsent:
+  acceptAlways: 常に許可
+  acceptOnce: はい
+  description: '{title}が提供する外部コンテンツを読み込みますか？'
+  descriptionEmptyStore: このサービスに永続的に同意するには、{link}で{title}を許可してください。
+  modalLinkText: 同意管理
+decline: 同意しない
+ok: 同意する
+poweredBy: Klaro! により実現
+privacyPolicy:
+  name: プライバシーポリシー
+  text: 詳細については、{privacyPolicy}をご確認ください。
+purposeItem:
+  service: サービス
+  services: サービス
+purposes:
+  advertising:
+    description: これらのサービスは、パーソナライズされた広告や興味関心に基づく広告を表示するために個人情報を処理します。
+    title: 広告
+  functional:
+    description: |
+      これらのサービスは、このウェブサイトを正しく動作させるために不可欠です。無効にするとサービスが正しく機能しないため、ここでは無効にできません。
+    title: サービス提供
+  marketing:
+    description: これらのサービスは、関心がある可能性のある商品、サービス、トピックに関する関連コンテンツを表示するために個人情報を処理します。
+    title: マーケティング
+  performance:
+    description: |
+      これらのサービスは、このウェブサイトが提供するサービスを最適化するために個人情報を処理します。
+    title: パフォーマンス最適化
+save: 保存
+service:
+  disableAll:
+    description: このスイッチを使用して、すべてのサービスを有効または無効にできます。
+    title: すべてのサービスを有効または無効にする
+  optOut:
+    description: このサービスは既定で読み込まれます（ただしオプトアウトできます）
+    title: （オプトアウト）
+  purpose: 目的
+  purposes: 目的
+  required:
+    description: このサービスは常に必要です
+    title: （常に必要）
