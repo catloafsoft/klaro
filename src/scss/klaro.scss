@@ -221,6 +221,7 @@
                 padding: 4px;
 
                 svg {
+                    pointer-events: none;
                     @include var(stroke, light1);
                 }
             }

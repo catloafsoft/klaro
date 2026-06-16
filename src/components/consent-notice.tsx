@@ -80,7 +80,7 @@ const ConsentNotice = ({ lang, config, show, manager, testing, t, modal: modalPr
     const hideModal = useCallback(() => {
         if (config.mustConsent && !config.acceptAll)
             return;
-        if (manager.confirmed && !testing)
+        if (modalProp || (manager.confirmed && !testing))
             hide();
         else
             setLocalModal(false);
@@ -88,7 +88,7 @@ const ConsentNotice = ({ lang, config, show, manager, testing, t, modal: modalPr
         setTimeout(() => {
             noticeRef.current?.focus();
         }, 1);
-    }, [config.acceptAll, config.mustConsent, hide, manager.confirmed, testing]);
+    }, [config.acceptAll, config.mustConsent, hide, manager.confirmed, modalProp, testing]);
 
     const changesText = manager.changed ? (
         <p className="cn-changes">

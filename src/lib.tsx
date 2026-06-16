@@ -134,9 +134,12 @@ export function renderContextualConsentNotices(manager: any, tt: any, lang: stri
                 }
                 if (placeholderElement === null){
                     placeholderElement = document.createElement("DIV")
-                    const placeholderWidth = trackedElement.width || trackedElement.getBoundingClientRect().width
-                    const placeholderHeight = trackedElement.height || trackedElement.getBoundingClientRect().height
-                    placeholderElement.style.cssText = `max-width: ${placeholderWidth}px; height: ${placeholderHeight}px;${consent ? ' display: none;' : ''}`
+                    const trackedRect = trackedElement.getBoundingClientRect()
+                    const placeholderWidth = trackedElement.width || trackedRect.width
+                    const placeholderHeight = trackedElement.height || trackedRect.height
+                    const widthStyle = placeholderWidth > 0 ? `width: ${placeholderWidth}px; max-width: 100%;` : 'width: 100%;'
+                    const heightStyle = placeholderHeight > 0 ? `height: ${placeholderHeight}px;` : 'min-height: 140px;'
+                    placeholderElement.style.cssText = `${widthStyle} ${heightStyle}${consent ? ' display: none;' : ''}`
                     applyDataset({type: 'placeholder', name: service.name}, placeholderElement)
                     // if consent is already given, we still insert an invisble placeholder that
                     // might be revealed later if the user changes the consent decision
