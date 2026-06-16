@@ -20,8 +20,6 @@ describe('contextual consent notices', () => {
             services: [
                 {
                     name: 'youtube',
-                    purposes: ['marketing'],
-                    contextualConsentOnly: true,
                 },
             ],
         };
@@ -41,8 +39,6 @@ describe('contextual consent notices', () => {
             services: [
                 {
                     name: 'twitter',
-                    purposes: ['marketing'],
-                    contextualConsentOnly: true,
                 },
             ],
         };

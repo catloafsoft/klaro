@@ -14,22 +14,7 @@ const config = {
 
 const t = (key) => {
     const last = Array.isArray(key) ? key[key.length - 1] : key;
-    const values = {
-        acceptAll: 'Accept all',
-        acceptSelected: 'Accept selected',
-        close: 'Close',
-        decline: 'Decline',
-        description: 'Choose services',
-        learnMore: 'Let me choose',
-        name: 'privacy policy',
-        ok: 'OK',
-        poweredBy: 'Powered by Klaro',
-        save: 'Save',
-        service: 'service',
-        services: 'services',
-        title: 'Privacy settings',
-    };
-    return values[last] || last;
+    return last;
 };
 
 describe('ConsentNotice', () => {
