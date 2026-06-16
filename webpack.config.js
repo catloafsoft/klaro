@@ -9,7 +9,7 @@ module.exports = (env, argv) => {
   switch (argv.mode) {
     case 'development':
       var config = merge(baseConfig, devConfig);
-      break;
+      return config;
     case 'production':
       var config = merge(baseConfig, prodConfig);
       break;

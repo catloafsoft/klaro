@@ -216,6 +216,9 @@
                 top: 20px;
                 right: 20px;
                 z-index: 1;
+                min-height: 32px;
+                min-width: 32px;
+                padding: 4px;
 
                 svg {
                     @include var(stroke, light1);
@@ -232,7 +235,13 @@
                 &-buttons {
                     display: flex;
                     flex-flow: row;
+                    flex-wrap: wrap;
+                    gap: map.get($cm-space, sm);
                     justify-content: space-between;
+
+                    .cm-btn {
+                        margin-right: 0;
+                    }
                 }
 
                 .cm-powered-by {
@@ -253,12 +262,13 @@
                 @include var(border-bottom-color, dark2);
 
                 padding: 1em;
-                padding-right: 24px;
+                padding-right: 56px;
 
                 h1 {
                     margin: 0;
                     font-size: 2em;
                     display: block;
+                    text-decoration: none;
 
                     &.title {
                         padding-right: 20px;
@@ -320,6 +330,7 @@
                         p.purposes {
                             @include var(color, light3);
                             font-size: 0.8em;
+                            line-height: 1.4;
                         }
 
                         &.cm-toggle-all {
@@ -341,6 +352,82 @@
                             padding-left: 0.2em;
                             font-size: 0.8em;
                         }
+                    }
+                }
+            }
+
+            @media (max-width: ($cm-tablet - 1)) {
+                max-height: calc(100dvh - #{map.get($cm-space, md) * 2});
+
+                .cm-header,
+                .cm-body,
+                .cm-footer {
+                    padding-left: map.get($cm-space, md);
+                    padding-right: map.get($cm-space, md);
+                }
+
+                .cm-header {
+                    padding-right: 48px;
+
+                    h1 {
+                        font-size: 1.55em;
+                        line-height: 1.2;
+                    }
+                }
+
+                .hide {
+                    top: map.get($cm-space, sm);
+                    right: map.get($cm-space, sm);
+                }
+
+                .cm-body {
+                    ul.cm-services,
+                    ul.cm-purposes {
+                        li.cm-service,
+                        li.cm-purpose {
+                            padding-left: 58px;
+
+                            .cm-list-description,
+                            p.purposes {
+                                max-width: 100%;
+                                overflow-wrap: anywhere;
+                            }
+                        }
+
+                        li.cm-purpose {
+                            .cm-services {
+                                .cm-content {
+                                    margin-left: 0;
+                                    padding-left: map.get($cm-space, lg);
+                                }
+                            }
+                        }
+                    }
+
+                    li.cm-purpose .cm-services .cm-content li.cm-service {
+                        padding-left: 54px;
+                    }
+                }
+
+                .cm-footer {
+                    &-buttons {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+
+                        .cm-btn {
+                            min-height: 40px;
+                            white-space: normal;
+                        }
+
+                        .cm-btn-accept-all {
+                            grid-column: 1 / -1;
+                            order: -1;
+                        }
+                    }
+
+                    .cm-powered-by {
+                        text-align: center;
+                        padding-right: 0;
                     }
                 }
             }
@@ -393,50 +480,87 @@
 
             padding: 1em;
             padding-top: 0;
+            display: flex;
+            flex-direction: column;
+            gap: map.get($cm-space, sm);
+
+            @media (min-width: $cm-desktop) {
+                flex-flow: row wrap;
+                padding-top: 1em;
+            }
 
             p {
-                margin-bottom: 0.5em;
+                margin-bottom: 0;
+                max-width: 64ch;
+
+                @media (min-width: $cm-desktop) {
+                    flex: 1 1 420px;
+                }
             }
 
             p.cn-changes {
                 text-decoration: underline;
+
+                @media (min-width: $cm-desktop) {
+                    flex-basis: 100%;
+                }
             }
 
             .cn-learn-more {
-                display: inline-block;
-                flex-grow: 1;
+                display: inline-flex;
+                align-items: center;
+                flex-grow: 0;
+                margin-right: map.get($cm-space, sm);
             }
 
             .cn-buttons {
-                display: inline-block;
-                margin-top: -0.5em;
+                display: flex;
+                flex-wrap: wrap;
+                gap: map.get($cm-space, sm);
+                margin-top: 0;
 
                 @media (max-width: $cm-mobile) {
                     width: 100%;
                 }
 
                 button.cm-btn {
-                    margin-top: 0.5em;
+                    margin-top: 0;
+                    margin-right: 0;
+                    min-height: 36px;
 
                     @media (max-width: $cm-mobile) {
-                        width: calc(50% - #{$btn-margin-right});
+                        flex: 1 1 calc(50% - #{map.get($cm-space, sm)});
                     }
                 }
             }
 
             .cn-ok {
-                // we add a margin that cancels out unless the items are wrapped
-                // in which case it will add some spacing between them
-                margin-top: -0.5em;
                 display: flex;
-                flex-flow: row;
+                flex-flow: row wrap;
+                gap: map.get($cm-space, sm);
                 flex-wrap: wrap;
-                justify-content: right;
-                align-items: baseline;
+                justify-content: flex-end;
+                align-items: center;
+
+                @media (min-width: $cm-desktop) {
+                    flex: 0 0 auto;
+                    margin-left: auto;
+                }
 
                 a,
                 div {
-                    margin-top: 0.5em;
+                    margin-top: 0;
+                }
+
+                @media (max-width: $cm-mobile) {
+                    align-items: stretch;
+                    flex-direction: column;
+
+                    .cn-learn-more {
+                        justify-content: center;
+                        margin-right: 0;
+                        min-height: 36px;
+                    }
                 }
             }
         }

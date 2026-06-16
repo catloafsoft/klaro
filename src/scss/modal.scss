@@ -1,3 +1,4 @@
+@use "sass:map";
 @use './vars' as *;
 
 @mixin modal($centerWidth, $windowWidth) {
@@ -8,18 +9,24 @@
     z-index: 1001;
     box-shadow: $cm-box-shadow-dark-md;
 
-    width: 100%;
+    box-sizing: border-box;
+    width: calc(100% - #{map.get($cm-space, md) * 2});
     max-height: 98%;
+    max-width: calc(100vw - #{map.get($cm-space, md) * 2});
 
     top: 50%;
+    left: map.get($cm-space, md);
     transform: translateY(-50%);
 
+    border: 0;
+    margin: 0;
     position: fixed;
     overflow: auto;
 
     @media (min-width: $centerWidth) {
         @include var(border-radius, border-radius);
         position: relative;
+        left: auto;
         margin: 0 auto;
         max-width: $windowWidth;
         height: auto;
