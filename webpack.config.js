@@ -9,7 +9,7 @@ module.exports = (env, argv) => {
   switch (argv.mode) {
     case 'development':
       var config = merge(baseConfig, devConfig);
-      break;
+      return config;
     case 'production':
       var config = merge(baseConfig, prodConfig);
       break;
@@ -20,7 +20,7 @@ module.exports = (env, argv) => {
   let config2 = {
     ...config,
     entry: {
-      'klaro-no-translations': path.join(SRC_DIR, 'klaro-no-translations.js'),
+      'klaro-no-translations': path.join(SRC_DIR, 'klaro-no-translations.ts'),
     },
     output: {
       ...config.output,

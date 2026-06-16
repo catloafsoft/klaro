@@ -1,6 +1,7 @@
 @use "sass:map";
-@import './vars';
+@use './vars' as *;
 
+@mixin styles {
 .cm-list {
     .cm-item {
         display: flex;
@@ -104,4 +105,6 @@
             flex: 10;
         }
     }
+}
+
 }

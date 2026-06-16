@@ -11,10 +11,7 @@ var klaroConfig = {
     // when starting up. If undefined, Klaro will use 'klaro'.
     elementID: 'klaro',
 
-    // You can override CSS style variables here. For IE11, Klaro will
-    // dynamically inject the variables into the CSS. If you still consider
-    // supporting IE9-10 (which you probably shouldn't) you need to use Klaro
-    // with an external stylesheet as the dynamic replacement won't work there.
+    // You can override CSS style variables here.
     styling: {
         theme: ['light', 'top', 'wide'],
     },
@@ -29,8 +26,10 @@ var klaroConfig = {
     noAutoLoad: false,
 
     // Setting this to true will render the descriptions of the consent
-    // modal and consent notice are HTML. Use with care.
+    // modal and consent notice as HTML. Use with care and only with trusted
+    // strings. You can provide sanitizeHtml to clean each HTML string first.
     htmlTexts: true,
+    //sanitizeHtml: function(html) { return html; },
 
     // Setting 'embedded' to true will render the Klaro modal and notice without
     // the modal background, allowing you to e.g. embed them into a specific element
@@ -49,7 +48,7 @@ var klaroConfig = {
     showNoticeTitle: false,
 
     // How Klaro should store the user's preferences. It can be either 'cookie'
-    // (the default) or 'localStorage'.
+    // (the default), 'localStorage', or 'sessionStorage'.
     storageMethod: 'cookie',
 
     // You can customize the name of the cookie that Klaro uses for storing
@@ -59,6 +58,14 @@ var klaroConfig = {
     // You can also set a custom expiration time for the Klaro cookie.
     // By default, it will expire after 120 days.
     cookieExpiresAfterDays: 365,
+
+    // You can customize cookie attributes for modern browser policies.
+    cookieSameSite: 'Lax',
+    //cookieSecure: true,
+
+    // If enabled, Klaro will default optional services to disabled when the
+    // browser sends Global Privacy Control.
+    respectGlobalPrivacyControl: false,
 
     // You can change to cookie domain for the consent manager itself.
     // Use this if you want to get consent once for multiple matching domains.

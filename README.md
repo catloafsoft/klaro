@@ -94,7 +94,7 @@ The consent manager is configured using a config dictionary, which you typically
 
 Klaro is also available as a Node.js module via npm:
 
-    npm install klaro
+    pnpm add klaro
 
 The npm distribution includes fully-fledged Klaro with CSS as well as the version without CSS (the CSS
 bundle is also included). In addition, it contains the consent management framework without the UI classes,
@@ -122,9 +122,9 @@ to see a complete example.
 
 If you want to customize Klaro or extend it, you can build it from scratch using the following commands:
 ```sh
-npm install
-npm run-script make-dev #will run a development server
-npm run-script make #will build the production version
+pnpm install
+pnpm run make-dev #will run a development server
+pnpm run make #will build the production version
 ```
 
 If you have an environment where `make` is available, you can also run

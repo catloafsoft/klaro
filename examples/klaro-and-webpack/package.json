@@ -1,8 +1,9 @@
 {
   "name": "klaro-and-webpack",
   "version": "0.1.0",
-  "description": "An example showing how to import Klaro as a npm module and bundle it with Webpack.",
+  "description": "An example showing how to import Klaro as a package and bundle it with Webpack.",
   "main": "src/index.js",
+  "packageManager": "pnpm@11.6.0",
   "scripts": {
     "build": "webpack",
     "dev": "webpack-dev-server"
@@ -10,10 +11,11 @@
   "author": "KIProtect GmbH",
   "license": "BSD-3",
   "devDependencies": {
-    "klaro": "../..",
-    "style-loader": "^3.3.4",
-    "webpack": "^5.90.3",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.2"
+    "css-loader": "^7.1.4",
+    "klaro": "workspace:*",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.107.2",
+    "webpack-cli": "^7.0.3",
+    "webpack-dev-server": "^5.2.5"
   }
 }

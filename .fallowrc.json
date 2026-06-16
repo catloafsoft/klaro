@@ -1,0 +1,85 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "entry": [
+    "src/klaro.ts",
+    "src/klaro-no-translations.ts",
+    "src/consent-manager.ts",
+    "src/translations.ts",
+    "src/ide.tsx",
+    "examples/klaro-and-webpack/src/index.js",
+    "webpack.config.js",
+    "babel.config.js",
+    "vitest.config.mjs"
+  ],
+  "ignorePatterns": [
+    "dist/**",
+    "examples/klaro-and-webpack/dist/**"
+  ],
+  "ignoreDependencies": [
+    "babel-loader",
+    "core-js",
+    "css-loader",
+    "postcss-loader",
+    "sass-loader",
+    "style-loader",
+    "yaml-loader"
+  ],
+  "ignoreExports": [
+    {
+      "file": "webpack.dev.js",
+      "exports": ["*"]
+    },
+    {
+      "file": "webpack.prod.js",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/utils/config.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/utils/maps.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/components/ide/controls/cookies.tsx",
+      "exports": ["Cookies"]
+    },
+    {
+      "file": "src/components/ide/controls/i18n-input.tsx",
+      "exports": ["I18nInput"]
+    },
+    {
+      "file": "src/components/ide/controls/language-select.tsx",
+      "exports": ["LanguageSelect"]
+    },
+    {
+      "file": "src/components/ide/controls/purpose-order.tsx",
+      "exports": ["PurposeOrder"]
+    },
+    {
+      "file": "src/components/ide/controls/purpose-select.tsx",
+      "exports": ["PurposeSelect"]
+    },
+    {
+      "file": "src/components/ide/controls/range.tsx",
+      "exports": ["Range"]
+    },
+    {
+      "file": "src/components/ide/controls/select.tsx",
+      "exports": ["Select"]
+    },
+    {
+      "file": "src/components/ide/controls/service-select.tsx",
+      "exports": ["ServiceSelect"]
+    },
+    {
+      "file": "src/components/ide/controls/switch.tsx",
+      "exports": ["Switch"]
+    },
+    {
+      "file": "src/components/ide/controls/themes-select.tsx",
+      "exports": ["ThemesSelect"]
+    }
+  ]
+}

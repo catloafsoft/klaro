@@ -1,5 +1,7 @@
 @use "sass:map";
+@use './vars' as *;
 
+@mixin styles {
 .cm-dropdown {
     position: relative;
 
@@ -82,4 +84,6 @@
         right: 0;
         left: auto;
     }
+}
+
 }

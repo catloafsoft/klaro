@@ -1,0 +1,61 @@
+acceptAll: 모두 동의
+acceptSelected: 선택 항목 동의
+close: 닫기
+consentModal:
+  description: 여기에서 이 웹사이트에서 사용하려는 서비스를 확인하고 맞춤 설정할 수 있습니다. 필요한 서비스만 직접 활성화하거나 비활성화하세요.
+  privacyPolicy:
+    name: 개인정보 처리방침
+    text: 자세한 내용은 {privacyPolicy}을(를) 확인하세요.
+  title: 사용하려는 서비스
+consentNotice:
+  changeDescription: 마지막 방문 이후 변경 사항이 있습니다. 동의를 다시 확인해 주세요.
+  description: 안녕하세요. {purposes}을(를) 위해 추가 서비스를 활성화해도 될까요? 동의는 나중에 언제든지 변경하거나 철회할 수 있습니다.
+  imprint:
+    name: 사이트 정보
+  learnMore: 직접 선택
+  privacyPolicy:
+    name: 개인정보 처리방침
+  testing: 테스트 모드입니다!
+contextualConsent:
+  acceptAlways: 항상 허용
+  acceptOnce: 예
+  description: '{title}에서 제공하는 외부 콘텐츠를 불러오시겠습니까?'
+  descriptionEmptyStore: 이 서비스에 영구적으로 동의하려면 {link}에서 {title}을(를) 허용해야 합니다.
+  modalLinkText: 동의 관리
+decline: 동의하지 않음
+ok: 동의
+poweredBy: Klaro!로 구현됨
+privacyPolicy:
+  name: 개인정보 처리방침
+  text: 자세한 내용은 {privacyPolicy}을(를) 확인하세요.
+purposeItem:
+  service: 서비스
+  services: 서비스
+purposes:
+  advertising:
+    description: 이러한 서비스는 개인 맞춤형 광고 또는 관심 기반 광고를 표시하기 위해 개인정보를 처리합니다.
+    title: 광고
+  functional:
+    description: |
+      이러한 서비스는 이 웹사이트가 올바르게 작동하는 데 필수적입니다. 비활성화하면 서비스가 제대로 작동하지 않으므로 여기에서는 비활성화할 수 없습니다.
+    title: 서비스 제공
+  marketing:
+    description: 이러한 서비스는 관심이 있을 수 있는 제품, 서비스 또는 주제와 관련된 콘텐츠를 표시하기 위해 개인정보를 처리합니다.
+    title: 마케팅
+  performance:
+    description: |
+      이러한 서비스는 이 웹사이트가 제공하는 서비스를 최적화하기 위해 개인정보를 처리합니다.
+    title: 성능 최적화
+save: 저장
+service:
+  disableAll:
+    description: 이 스위치를 사용하여 모든 서비스를 활성화하거나 비활성화할 수 있습니다.
+    title: 모든 서비스 활성화 또는 비활성화
+  optOut:
+    description: 이 서비스는 기본적으로 로드됩니다(하지만 거부할 수 있습니다)
+    title: (거부 가능)
+  purpose: 목적
+  purposes: 목적
+  required:
+    description: 이 서비스는 항상 필요합니다
+    title: (항상 필요)
