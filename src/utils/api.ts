@@ -72,7 +72,7 @@ export default class KlaroApi {
         let body: string | undefined;
         let url = this.url + path;
 
-        if (data !== undefined) {
+        if (data !== undefined && data !== null) {
             if (type === 'GET') {
                 const query = new URLSearchParams(
                     Object.entries(data)

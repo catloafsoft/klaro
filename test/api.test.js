@@ -22,4 +22,20 @@ describe('KlaroApi', () => {
             { method: 'GET', headers: {}, body: undefined }
         );
     });
+
+    it('allows null request data', async () => {
+        const fetchMock = vi.fn().mockResolvedValue({
+            status: 200,
+            text: () => Promise.resolve('{"ok":true}'),
+        });
+        globalThis.fetch = fetchMock;
+
+        const api = new KlaroApi('https://example.test', 'abc123');
+        await expect(api.apiRequest('GET', '/health', null)).resolves.toEqual({ ok: true });
+
+        expect(fetchMock).toHaveBeenCalledWith(
+            'https://example.test/health',
+            { method: 'GET', headers: {}, body: undefined }
+        );
+    });
 });

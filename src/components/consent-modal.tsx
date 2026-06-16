@@ -38,6 +38,14 @@ const ConsentModal = ({
 
     useEffect(() => {
         previousActiveElement.current = document.activeElement;
+        return () => {
+            const previous = previousActiveElement.current;
+            if (previous instanceof HTMLElement)
+                previous.focus();
+        };
+    }, []);
+
+    useEffect(() => {
         const onKeyDown = (e: KeyboardEvent) => {
             const modal = consentModalRef.current;
             if (e.key === 'Escape' && !config.mustConsent) {
@@ -67,9 +75,6 @@ const ConsentModal = ({
         consentModalRef.current?.focus();
         return () => {
             document.removeEventListener('keydown', onKeyDown);
-            const previous = previousActiveElement.current;
-            if (previous instanceof HTMLElement)
-                previous.focus();
         };
     }, [config.mustConsent, hide]);
 

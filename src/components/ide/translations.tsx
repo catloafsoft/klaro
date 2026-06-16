@@ -39,7 +39,7 @@ const TranslationsForKey = ({hintKey, translationKey, noDefault, onChange, name,
             <span className="cm-lang">{language !== 'zz' ? language : '_'}</span>
             <BaseRetractingLabelInput
                 onChange={changeValue}
-                label={[...([] as React.ReactNode[]).concat(label), ...(isDefault ? [' ', ...([] as React.ReactNode[]).concat(t(['translations', 'defaultValue']))] : [])]}
+                label={[label, isDefault && ' ', isDefault && t(['translations', 'defaultValue'])]}
                 value={value || fallbackValue || ''}
             />
         </li>

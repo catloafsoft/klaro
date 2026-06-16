@@ -12,7 +12,12 @@ function escapeRegexStr(str: string) {
 function getCookiePatternRegex(pattern: string): RegExp {
     let regex = COOKIE_PATTERN_REGEXES.get(pattern);
     if (regex === undefined) {
-        regex = pattern.startsWith('^') ? new RegExp(pattern) : new RegExp('^'+escapeRegexStr(pattern)+'$');
+        try {
+            regex = pattern.startsWith('^') ? new RegExp(pattern) : new RegExp('^'+escapeRegexStr(pattern)+'$');
+        } catch (e) {
+            console.warn('Invalid cookie pattern regex: '+pattern, e);
+            regex = new RegExp('^'+escapeRegexStr(pattern)+'$');
+        }
         COOKIE_PATTERN_REGEXES.set(pattern, regex);
     }
     return regex;
@@ -340,9 +345,7 @@ export default class ConsentManager {
                 const newElement = document.createElement(element.tagName) as any
                 for(const attribute of element.attributes){
                     if (attribute.name === 'style') {
-                        const [styleProperty, styleValue] = attribute.value.split(':')
-                        if (styleProperty !== undefined && styleValue !== undefined)
-                            newElement.style[styleProperty.trim()] = styleValue.trim()
+                        newElement.style.cssText = attribute.value
                     } else {
                         newElement.setAttribute(attribute.name, attribute.value)
                     }

@@ -4,6 +4,8 @@ export function injectStyles(config: any, themes: Record<string, Record<string, 
 
     if (config.styling === undefined)
         return
+    if (typeof document === 'undefined')
+        return
 
     let styling: Record<string, string | string[]> = Object.assign({}, config.styling)
 
