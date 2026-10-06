@@ -50,6 +50,8 @@
   },
   "files": [
     "cm.mjs",
+    "klaro.mjs",
+    "klaro-no-css.mjs",
     "dist",
     "types",
     "src/**/*.css",
@@ -91,13 +93,13 @@
   "exports": {
     ".": {
       "types": "./types/index.d.ts",
-      "import": "./dist/klaro.js",
+      "import": "./klaro.mjs",
       "require": "./dist/klaro.js",
       "default": "./dist/klaro.js"
     },
     "./no-css": {
       "types": "./types/index.d.ts",
-      "import": "./dist/klaro-no-css.js",
+      "import": "./klaro-no-css.mjs",
       "require": "./dist/klaro-no-css.js",
       "default": "./dist/klaro-no-css.js"
     },

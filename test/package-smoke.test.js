@@ -36,6 +36,29 @@ describe('package exports', () => {
         });
     });
 
+    it.each(['', '/no-css'])('exposes working named APIs to native ESM consumers of %s', (subpath) => {
+        const script = `
+            import assert from 'node:assert/strict';
+            import * as klaro from '${packageJson.name}${subpath}';
+            for (const name of ['setup', 'show', 'getManager', 'resetManagers', 'render', 'updateConfig', 'version'])
+                assert.equal(typeof klaro[name], 'function', name);
+            assert.equal(klaro.version(), '${packageJson.version}');
+            klaro.setup();
+            globalThis.sessionStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
+            const config = { services: [], storageMethod: 'test' };
+            const manager = klaro.getManager(config);
+            assert.deepEqual(manager.consents, {});
+            manager.saveConsents();
+            assert.equal(manager.confirmed, true);
+            assert.equal(klaro.getManager(config), manager);
+            klaro.resetManagers();
+            assert.notEqual(klaro.getManager(config), manager);
+        `;
+        execFileSync(process.execPath, ['--input-type=module', '-e', script], {
+            cwd: dirname(require.resolve(`${packageJson.name}/package.json`)),
+        });
+    });
+
     it('exports the ConsentManager class through bundler ESM interop', async () => {
         const { default: ConsentManager } = await import('../cm.mjs');
         const store = { get: () => null, set: () => {}, delete: () => {} };

@@ -1,7 +1,7 @@
 [
   {
     "changelog": {
-      "en": "Restrict IDE preview links to HTTP and HTTPS, preserve HTTP status and body text for non-object API errors, and export the consent manager class correctly to native ESM consumers."
+      "en": "Restrict IDE preview links to HTTP and HTTPS, preserve HTTP status and body text for non-object API errors, and export the browser API and consent manager class correctly to native ESM consumers."
     },
     "date": "2026-10-06",
     "files": [
