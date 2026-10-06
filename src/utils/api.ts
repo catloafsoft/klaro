@@ -94,7 +94,10 @@ export default class KlaroApi {
             .then((response) => {
                 if (response.status < 200 || response.status >= 300) {
                     return response.text().then((text) => {
-                        const responseData = parseResponseText(text);
+                        const parsed = parseResponseText(text);
+                        const responseData = parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)
+                            ? parsed as Record<string, any>
+                            : { text };
                         responseData.status = response.status;
                         throw Object.assign(new Error('Klaro API request failed'), responseData);
                     });
@@ -130,7 +133,7 @@ export default class KlaroApi {
 
 }
 
-function parseResponseText(text: string): Record<string, any> {
+function parseResponseText(text: string): unknown {
     if (text === '')
         return {};
     try {

@@ -108,7 +108,7 @@ Configure the GitHub Packages registry in your project's `.npmrc`:
 Set `NODE_AUTH_TOKEN` to a GitHub personal access token (classic) with `read:packages`
 and access to the package, then install:
 
-    pnpm add @catloafsoft/klaro@0.8.0
+    pnpm add @catloafsoft/klaro@0.8.1
 
 Keep credentials outside source control. GitHub Actions consumers can use their
 `GITHUB_TOKEN` when their repository has package access. See

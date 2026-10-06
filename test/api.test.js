@@ -42,6 +42,9 @@ describe('KlaroApi', () => {
     it.each([
         { status: 400, text: '{"detail":"bad input"}', expected: { status: 400, detail: 'bad input' } },
         { status: 503, text: 'Unavailable', expected: { status: 503, text: 'Unavailable' } },
+        ...['null', '"Denied"', '42', 'false', '["Denied"]'].map(text => ({
+            status: 403, text, expected: { status: 403, text },
+        })),
     ])('preserves HTTP $status error details', async ({ status, text, expected }) => {
         globalThis.fetch = vi.fn().mockResolvedValue({ status, text: async () => text });
         const api = new KlaroApi('https://example.test', 'abc123');

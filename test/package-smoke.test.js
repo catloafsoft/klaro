@@ -3,6 +3,8 @@ import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { runInContext } from 'node:vm';
 import { JSDOM } from 'jsdom';
+import { execFileSync } from 'node:child_process';
+import { dirname } from 'node:path';
 import packageJson from '../package.json';
 
 const require = createRequire(import.meta.url);
@@ -16,6 +18,28 @@ describe('package exports', () => {
             expect(require.resolve(`${packageJson.name}/dist/${bundle}.js`)).toBe(require.resolve(modern));
         }
         expect(readFileSync(require.resolve(`${packageJson.name}/klaro.css`), 'utf8')).toContain('.klaro');
+    });
+
+    it('exports a usable ConsentManager class to native ESM consumers', () => {
+        const script = `
+            import assert from 'node:assert/strict';
+            import ConsentManager from '${packageJson.name}/cm';
+            const store = { get: () => null, set: () => {}, delete: () => {} };
+            const manager = new ConsentManager({ services: [] }, store, store);
+            assert.deepEqual(manager.consents, {});
+            assert.equal(manager.confirmed, false);
+            manager.saveConsents();
+            assert.equal(manager.confirmed, true);
+        `;
+        execFileSync(process.execPath, ['--input-type=module', '-e', script], {
+            cwd: dirname(require.resolve(`${packageJson.name}/package.json`)),
+        });
+    });
+
+    it('exports the ConsentManager class through bundler ESM interop', async () => {
+        const { default: ConsentManager } = await import('../cm.mjs');
+        const store = { get: () => null, set: () => {}, delete: () => {} };
+        expect(new ConsentManager({ services: [] }, store, store).confirmed).toBe(false);
     });
 
     it.each(['%', '%E0%A4%A'])('handles a malformed page fragment: %s', (fragment) => {

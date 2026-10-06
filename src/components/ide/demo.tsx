@@ -47,7 +47,16 @@ export const Demo = ({t: ttt, config}: any) => {
     const tt = (...args: [any, ...any[]]) => t(trans, lang, config.fallbackLang || 'zz', ...args)
     const languages = config.languages.map((language: string) => <option key={language} value={language}>{ttt(['languages', language])} ({language})</option>)
     const testOnSite = () => {
-        window.open(siteUrl+`#klaro-testing&klaro-config=${encodeURIComponent(config.name)}`, '_blank', 'noopener')
+        let url: URL
+        try {
+            url = new URL(siteUrl)
+        } catch {
+            return
+        }
+        if (url.protocol !== 'http:' && url.protocol !== 'https:')
+            return
+        url.hash = `klaro-testing&klaro-config=${encodeURIComponent(config.name)}`
+        window.open(url.href, '_blank', 'noopener')
     }
 
     const appRef = useRef<HTMLDivElement | null>(null)
@@ -62,8 +71,8 @@ export const Demo = ({t: ttt, config}: any) => {
         </p>
         <form onSubmit={(e) => {e.preventDefault();testOnSite()}}>
             <div className="cm-config-controls">
-                <BaseRetractingLabelInput value={siteUrl} onChange={setSiteUrl} label={ttt(['demo','testOnSite', 'label'])}/>
-                <button type="submit" className="cm-control-button cm-success" onClick={(e) => {e.preventDefault();testOnSite()}}>
+                <BaseRetractingLabelInput name="demo-site-url" type="url" required pattern="https?://.*" value={siteUrl} onChange={setSiteUrl} label={ttt(['demo','testOnSite', 'label'])}/>
+                <button type="submit" className="cm-control-button cm-success">
                     {ttt(['demo', 'testOnSite', 'button'])}
                 </button>
             </div>
