@@ -1,0 +1,41 @@
+name: Verify
+
+on:
+  push:
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run typecheck
+      - run: pnpm run lint
+      - run: pnpm run lint-scss
+      - run: pnpm run make
+      - run: pnpm run make
+        env:
+          SEPARATE_CSS: '1'
+      - run: pnpm run make
+        env:
+          SEPARATE_CSS: '1'
+          NO_MINIFY_CSS: '1'
+      - run: pnpm test
+      - run: pnpm --filter klaro-and-webpack build
+      - run: pnpm run release-metadata --check
+      - run: git diff --exit-code -- dist examples/klaro-and-webpack/dist
+      - run: pnpm audit --prod
+      # braces has no published fix; keep development advisories visible.
+      - name: Audit development dependencies
+        run: pnpm audit
+        continue-on-error: true

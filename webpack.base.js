@@ -102,7 +102,7 @@ if (SEPARATE_CSS) {
                     implementation: sass,
                     sassOptions: {
                         sourceMap: APP_ENV === 'development',
-                        outputStyle: NO_MINIFY_CSS ? 'expanded' : 'compressed',
+                        style: NO_MINIFY_CSS ? 'expanded' : 'compressed',
                     },
                 },
             },

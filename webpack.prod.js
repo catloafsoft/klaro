@@ -17,7 +17,7 @@ module.exports = {
                 process.env.CI_APP_VERSION ||
                 process.env.APP_VERSION ||
                 process.env.APP_COMMIT ||
-                'unknown'
+                require('./package.json').version
             ),
         }),
         new webpack.optimize.AggressiveMergingPlugin(),

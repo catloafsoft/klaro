@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import ConsentNotice from './consent-notice';
 import type { BaseComponentProps, KlaroWatcher } from '../types';
 
@@ -11,17 +11,12 @@ interface AppProps extends BaseComponentProps {
 const App = ({ config, lang, manager, modal, show, t, testing }: AppProps) => {
     const [, forceUpdate] = useState(0);
     const [hiddenForShow, setHiddenForShow] = useState<number | null>(null);
-    const propsRef = useRef({ config, manager, modal, show });
-
-    propsRef.current = { config, manager, modal, show };
-
-    useEffect(() => {
+    useLayoutEffect(() => {
         const watcher: KlaroWatcher = {
             update: (obj, type) => {
-                const current = propsRef.current;
-                if (obj === current.manager && type === 'applyConsents') {
-                    if (!current.config.embedded && current.manager.confirmed)
-                        setHiddenForShow(current.show);
+                if (obj === manager && type === 'applyConsents') {
+                    if (!config.embedded && manager.confirmed)
+                        setHiddenForShow(show);
                     else
                         forceUpdate((value) => value + 1);
                 }
@@ -29,7 +24,7 @@ const App = ({ config, lang, manager, modal, show, t, testing }: AppProps) => {
         };
         manager.watch(watcher);
         return () => manager.unwatch(watcher);
-    }, [manager]);
+    }, [config.embedded, manager, show]);
 
     const hide = useCallback(() => {
         if (!config.embedded)

@@ -1,8 +1,7 @@
 const path = require('path');
 
-const ENV = process.env.ENV || 'dev';
-
-const config = {
+module.exports = (_env, argv) => ({
+  mode: argv.mode || 'production',
   entry: './src/index.js',
   module: {
     rules: [
@@ -16,12 +15,7 @@ const config = {
     filename: 'main.js',
     path: path.resolve(__dirname, 'dist'),
   },
-};
-
-if (ENV === 'dev') {
-  console.log("Starting dev server!");
-  config.mode = 'development';
-  config.devServer = {
+  devServer: {
     hot: true,
     compress: true,
     port: 9000,
@@ -32,7 +26,5 @@ if (ENV === 'dev') {
     client: {
       overlay: true,
     }
-  }
-}
-
-module.exports = config;
+  },
+});

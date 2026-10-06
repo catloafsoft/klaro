@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 function readFile(ref: React.RefObject<HTMLInputElement | null>) {
     const file = ref.current?.files?.[0];
@@ -17,6 +17,15 @@ export const JSONConfig =({t, config, updateConfig}: any) => {
     const ref = useRef<HTMLInputElement | null>(null)
     const [error, setError] = useState<React.ReactNode>()
     const [message, setMessage] = useState<React.ReactNode>()
+    const [url, setUrl] = useState<string>()
+    const json = JSON.stringify(config, undefined, 2);
+
+    useEffect(() => {
+        const blob = new Blob([json], {type: "application/json"});
+        const downloadUrl = URL.createObjectURL(blob);
+        setUrl(downloadUrl);
+        return () => URL.revokeObjectURL(downloadUrl);
+    }, [json]);
 
     const importJSON = () => {
         const p = readFile(ref)
@@ -35,10 +44,6 @@ export const JSONConfig =({t, config, updateConfig}: any) => {
         });
         p.catch(() => setError(t(["json", "cannotReadFile"])));
     }
-
-    const json = JSON.stringify(config, undefined, 2);
-    const blob = new Blob([json], {type: "application/json"});
-    const url  = URL.createObjectURL(blob);
 
     return <div className="cm-json">
         <h3 className="cm-space-lg">{t(["json", "importExport"])}</h3>

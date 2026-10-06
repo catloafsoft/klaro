@@ -25,7 +25,6 @@ export class TestStore implements KlaroStore {
         this.value = value;
     }
 
-    // fallow-ignore-next-line unused-class-member
     delete() {
         this.value = null
     }

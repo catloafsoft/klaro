@@ -13,13 +13,8 @@ interface ConsentNoticeProps extends BaseComponentProps {
     testing?: boolean;
 }
 
-const ConsentNotice = ({ lang, config, show, manager, testing, t, modal: modalProp, hide }: ConsentNoticeProps) => {
-    const [localModal, setLocalModal] = useState(false);
+function useConsentActions({ config, manager, hide }: Pick<ConsentNoticeProps, "config" | "manager" | "hide">, modal: boolean) {
     const [confirming, setConfirming] = useState(false);
-    const noticeRef = useRef<HTMLElement | null>(null);
-    const { embedded, noticeAsModal, hideLearnMore } = config;
-    const modal = Boolean(modalProp) || localModal;
-
     const executeButtonClicked = useCallback((setChangedAll: boolean, changedAllValue: boolean, eventType: string) => {
         let changedServices = 0;
 
@@ -57,11 +52,16 @@ const ConsentNotice = ({ lang, config, show, manager, testing, t, modal: modalPr
         executeButtonClicked(true, false, 'decline');
     }, [executeButtonClicked]);
 
+    return { confirming, saveAndHide, acceptAndHide, declineAndHide };
+}
+
+function getPurposeText(config: ConsentNoticeProps["config"], t: ConsentNoticeProps["t"]) {
     const purposeOrder = config.purposeOrder || [];
     const purposes = getPurposes(config)
         .filter((purpose: string) => purpose !== 'functional')
         .sort((a: string, b: string) => purposeOrder.indexOf(a) - purposeOrder.indexOf(b));
     const purposesTranslations = purposes.map(
+        // react-doctor-disable-next-line react-doctor/no-prop-callback-in-render -- t is a pure translation lookup, not an event callback.
         (purpose: string) => t(['!', 'purposes', purpose, 'title?']) || asTitle(purpose),
     );
     const purposesText = purposesTranslations.length === 1
@@ -70,36 +70,26 @@ const ConsentNotice = ({ lang, config, show, manager, testing, t, modal: modalPr
             ...purposesTranslations.slice(0, -2),
             purposesTranslations.slice(-2).join(' & '),
         ].join(', ');
+    return purposesText;
+}
+
+interface NoticeContentProps extends BaseComponentProps {
+    testing?: boolean;
+    showModal: (event: React.MouseEvent<HTMLButtonElement>) => void;
+    saveAndHide: () => void;
+    acceptAndHide: () => void;
+    declineAndHide: () => void;
+}
+
+const NoticeContent = ({ config, lang, manager, testing, t, showModal, saveAndHide, acceptAndHide, declineAndHide }: NoticeContentProps) => {
+    const { noticeAsModal, hideLearnMore } = config;
+    const purposesText = getPurposeText(config, t);
     const ppUrl = getPrivacyPolicyUrl(config, lang, t);
-
-    const showModal = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        setLocalModal(true);
-    };
-
-    const hideModal = useCallback(() => {
-        if (config.mustConsent && !config.acceptAll)
-            return;
-        if (modalProp || (manager.confirmed && !testing))
-            hide();
-        else
-            setLocalModal(false);
-
-        setTimeout(() => {
-            noticeRef.current?.focus();
-        }, 1);
-    }, [config.acceptAll, config.mustConsent, hide, manager.confirmed, modalProp, testing]);
-
     const changesText = manager.changed ? (
         <p className="cn-changes">
             {t(['consentNotice', 'changeDescription'])}
         </p>
     ) : undefined;
-
-    if (!show && !testing && !confirming)
-        return <div />;
-
-    const noticeIsVisible = (!config.mustConsent || noticeAsModal) && !manager.confirmed && !config.noNotice;
 
     const declineButton = config.hideDeclineAll ? (
         ''
@@ -146,21 +136,6 @@ const ConsentNotice = ({ lang, config, show, manager, testing, t, modal: modalPr
         </a>
     ) : undefined;
 
-    if (modal || (manager.confirmed && !testing) || (!manager.confirmed && config.mustConsent))
-        return (
-            <ConsentModal
-                t={t}
-                lang={lang}
-                config={config}
-                hide={hideModal}
-                confirming={confirming}
-                declineAndHide={declineAndHide}
-                saveAndHide={saveAndHide}
-                acceptAndHide={acceptAndHide}
-                manager={manager}
-            />
-        );
-
     const noticeBody = (
         <>
             <div className="cn-body">
@@ -190,6 +165,18 @@ const ConsentNotice = ({ lang, config, show, manager, testing, t, modal: modalPr
         </>
     );
 
+    return noticeBody;
+};
+
+interface NoticeContainerProps extends BaseComponentProps {
+    children: React.ReactNode;
+    testing?: boolean;
+    noticeRef: React.RefObject<HTMLElement | null>;
+}
+
+const NoticeContainer = ({ config, manager, testing, noticeRef, children }: NoticeContainerProps) => {
+    const { embedded, noticeAsModal } = config;
+    const noticeIsVisible = (!config.mustConsent || noticeAsModal) && !manager.confirmed && !config.noNotice;
     const noticeClassName = `cookie-notice ${!noticeIsVisible && !testing ? 'cookie-notice-hidden' : ''} ${noticeAsModal ? 'cookie-modal-notice' : ''} ${embedded ? 'cn-embedded' : ''}`;
     const notice = noticeAsModal ? (
         <dialog
@@ -200,7 +187,7 @@ const ConsentNotice = ({ lang, config, show, manager, testing, t, modal: modalPr
             ref={noticeRef as React.RefObject<HTMLDialogElement | null>}
             className={noticeClassName}
         >
-            {noticeBody}
+            {children}
         </dialog>
     ) : (
         <section
@@ -212,7 +199,7 @@ const ConsentNotice = ({ lang, config, show, manager, testing, t, modal: modalPr
             ref={noticeRef}
             className={noticeClassName}
         >
-            {noticeBody}
+            {children}
         </section>
     );
 
@@ -224,6 +211,56 @@ const ConsentNotice = ({ lang, config, show, manager, testing, t, modal: modalPr
             <div className="cm-bg" />
             {notice}
         </div>
+    );
+};
+
+const ConsentNotice = ({ lang, config, show, manager, testing, t, modal: modalProp, hide }: ConsentNoticeProps) => {
+    const [localModal, setLocalModal] = useState(false);
+    const noticeRef = useRef<HTMLElement | null>(null);
+    const modal = Boolean(modalProp) || localModal;
+
+    const { confirming, saveAndHide, acceptAndHide, declineAndHide } = useConsentActions({ config, manager, hide }, modal);
+
+    const showModal = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        setLocalModal(true);
+    };
+
+    const hideModal = useCallback(() => {
+        if (config.mustConsent && !config.acceptAll)
+            return;
+        if (modalProp || (manager.confirmed && !testing))
+            hide();
+        else
+            setLocalModal(false);
+
+        setTimeout(() => {
+            noticeRef.current?.focus();
+        }, 1);
+    }, [config.acceptAll, config.mustConsent, hide, manager.confirmed, modalProp, testing]);
+
+    if (!show && !testing && !confirming)
+        return <div />;
+
+    if (modal || (manager.confirmed && !testing) || (!manager.confirmed && config.mustConsent))
+        return (
+            <ConsentModal
+                t={t}
+                lang={lang}
+                config={config}
+                hide={hideModal}
+                confirming={confirming}
+                declineAndHide={declineAndHide}
+                saveAndHide={saveAndHide}
+                acceptAndHide={acceptAndHide}
+                manager={manager}
+            />
+        );
+
+    return (
+        <NoticeContainer config={config} manager={manager} testing={testing} noticeRef={noticeRef} lang={lang} t={t}>
+            <NoticeContent config={config} manager={manager} testing={testing} lang={lang} t={t} showModal={showModal} saveAndHide={saveAndHide} acceptAndHide={acceptAndHide} declineAndHide={declineAndHide} />
+        </NoticeContainer>
     );
 };
 

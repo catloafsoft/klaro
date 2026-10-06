@@ -16,30 +16,7 @@ interface ServiceItemProps extends KlaroService {
     visible?: boolean;
 }
 
-const ServiceItem = ({
-    checked,
-    config,
-    description,
-    lang,
-    name,
-    onToggle,
-    onlyRequiredEnabled,
-    optOut = false,
-    purposes = EMPTY_PURPOSES,
-    required = false,
-    title,
-    translations,
-    t,
-    visible = true,
-}: ServiceItemProps) => {
-    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onToggle(e.target.checked);
-    };
-    const id = `service-item-${name}`;
-    const titleid = `${id}-title`;
-    const purposesText = purposes
-        .map((purpose) => t(['!', 'purposes', purpose, 'title?']) || asTitle(purpose))
-        .join(', ');
+const ServiceStatus = ({ optOut = false, required = false, t }: Pick<ServiceItemProps, "optOut" | "required" | "t">) => {
     const optOutText = optOut ? (
         <span className="cm-opt-out" title={String(t(['service', 'optOut', 'description']))}>
             {t(['service', 'optOut', 'title'])}
@@ -55,6 +32,15 @@ const ServiceItem = ({
         ''
     );
 
+    return <>{requiredText}{optOutText}</>;
+};
+
+const ServiceDetails = ({ config, description, lang, name, purposes = EMPTY_PURPOSES, translations, t }: ServiceItemProps) => {
+    const id = `service-item-${name}`;
+    const purposesText = purposes
+        // react-doctor-disable-next-line react-doctor/no-prop-callback-in-render -- t is a pure translation lookup, not an event callback.
+        .map((purpose) => t(['!', 'purposes', purpose, 'title?']) || asTitle(purpose))
+        .join(', ');
     const purposesContent = purposes.length > 0 ? (
         <p className="purposes">
             {t(['service', purposes.length > 1 ? 'purposes' : 'purpose'])}: {purposesText}
@@ -65,6 +51,26 @@ const ServiceItem = ({
         description ||
         tt(translations, lang, 'zz', ['!', 'description']) ||
         t(['!', name, 'description?']);
+
+    return (
+        <div id={`${id}-description`}>
+            {descriptionText && (
+                <p className="cm-list-description">
+                    <Text config={config} text={descriptionText} />
+                </p>
+            )}
+            {purposesContent}
+        </div>
+    );
+};
+
+const ServiceItem = (props: ServiceItemProps) => {
+    const { checked, lang, name, onToggle, onlyRequiredEnabled, required = false, title, translations, t, visible = true } = props;
+    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onToggle(e.target.checked);
+    };
+    const id = `service-item-${name}`;
+    const titleid = `${id}-title`;
 
     return (
         <div>
@@ -90,20 +96,12 @@ const ServiceItem = ({
                         t(['!', name, 'title?']) ||
                         asTitle(name)}
                 </span>
-                {requiredText}
-                {optOutText}
+                <ServiceStatus {...props} />
                 <span className="cm-switch">
                     <div className="slider round active"></div>
                 </span>
             </label>
-            <div id={`${id}-description`}>
-                {descriptionText && (
-                    <p className="cm-list-description">
-                        <Text config={config} text={descriptionText} />
-                    </p>
-                )}
-                {purposesContent}
-            </div>
+            <ServiceDetails {...props} />
         </div>
     );
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/preact';
+import { fireEvent, render, screen } from '@testing-library/preact';
 import Text from '../src/components/text';
 
 describe('Text', () => {
@@ -31,5 +31,15 @@ describe('Text', () => {
         expect(link.hasAttribute('onclick')).toBe(false);
         expect(document.querySelector('img')).toBeNull();
         expect(document.querySelector('script')).toBeNull();
+    });
+
+    it('preserves keyed interactive content when HTML text is reordered', () => {
+        const input = <input key="name" aria-label="Name" defaultValue="Original" />;
+        const html = '<strong>Repeated</strong>';
+        const { rerender } = render(<Text config={{ htmlTexts: true }} text={['Name: ', input, html, html]} />);
+        fireEvent.input(screen.getByRole('textbox', { name: 'Name' }), { target: { value: 'Edited' } });
+        rerender(<Text config={{ htmlTexts: true }} text={['Name: ', html, input, html]} />);
+        expect(screen.getByRole('textbox', { name: 'Name' }).value).toBe('Edited');
+        expect(screen.getAllByText('Repeated')).toHaveLength(2);
     });
 });

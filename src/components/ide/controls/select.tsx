@@ -10,6 +10,7 @@ export const Select = ({ t, field, config, updateConfig }: any) => {
     return (
         <div className="cm-select">
             <select
+                aria-label={String(t(['fields', field.name, 'title']))}
                 value={config[field.name]}
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => updateConfig([field.name], e.target.value)}
             >

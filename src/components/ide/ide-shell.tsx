@@ -9,6 +9,7 @@ function updateAtPath(target: any, path: (string | number | null)[], value: any,
     if (head === null || head === undefined)
         return target;
     const next = Array.isArray(target) ? [...target] : {...target};
+    // react-doctor-disable-next-line react-doctor/no-side-effect-in-state-updater-function -- Only the new clone is mutated; existing state is untouched.
     next[head] = tail.length === 0 && !overwrite ? value : updateAtPath(next[head] || {}, tail, value, overwrite);
     return next;
 }
