@@ -34,8 +34,22 @@ jobs:
       - run: pnpm --filter klaro-and-webpack build
       - run: pnpm run release-metadata --check
       - run: git diff --exit-code -- dist examples/klaro-and-webpack/dist
-      - run: pnpm audit --prod
-      # braces has no published fix; keep development advisories visible.
+      - name: Audit production dependencies
+        run: |
+          pnpm audit --prod
+          echo '### Production dependency audit: passed (no exceptions)' >> "$GITHUB_STEP_SUMMARY"
+      # No braces fix is published as of 2026-10-06. Remove this exception when
+      # a patched release is available. --ignore records it only in this CI checkout;
+      # the production audit above runs first, without any ignored advisories.
       - name: Audit development dependencies
-        run: pnpm audit
-        continue-on-error: true
+        run: |
+          pnpm audit --dev --ignore GHSA-vfj7-8cjw-p6xm
+          pnpm audit --dev
+          echo '::warning title=Known development dependency advisory::GHSA-vfj7-8cjw-p6xm (braces) is explicitly excluded from the development audit because no patched release is published. All other findings and audit errors fail verification.'
+          {
+            echo '### Development dependency audit: passed with one advisory exception'
+            echo ''
+            echo '- [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm): braces, development tooling only; no patched npm release as of 2026-10-06.'
+            echo '- All other advisories and registry errors remain blocking.'
+            echo '- Remove the exception when a patched braces release is available.'
+          } >> "$GITHUB_STEP_SUMMARY"
