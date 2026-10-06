@@ -85,12 +85,14 @@ const Text = ({ text, config }: TextProps) => {
         const first = textElements[0];
         if (typeof first === 'string' && first[0] === '<')
             wrapped = true;
-        const elements = textElements.map((textElement, i) => {
-            if (typeof textElement === 'string') {
-                const html = config.sanitizeHtml !== undefined ? config.sanitizeHtml(textElement) : textElement;
-                return <React.Fragment key={i}>{htmlToReact(html)}</React.Fragment>;
-            }
-            return <React.Fragment key={i}>{textElement}</React.Fragment>;
+        const occurrences = new Map<string, number>();
+        const elements = React.Children.toArray(textElements).map((textElement) => {
+            if (typeof textElement !== 'string')
+                return textElement;
+            const occurrence = occurrences.get(textElement) || 0;
+            occurrences.set(textElement, occurrence + 1);
+            const html = config.sanitizeHtml !== undefined ? config.sanitizeHtml(textElement) : textElement;
+            return <React.Fragment key={`${textElement}:${occurrence}`}>{htmlToReact(html)}</React.Fragment>;
         });
         if (wrapped)
             return <>{elements}</>;

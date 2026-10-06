@@ -4,12 +4,18 @@ import { getValue, getFallbackValue } from '../utils/i18n';
 export const PurposeOrder = ({t, config, updateConfig}: any) => {
     const purposes = new Set<string>()
     const purposeOrder = [...(config.purposeOrder || [])]
-    config.services.forEach((service: any) => service.purposes.forEach((purpose: string) => purposes.add(purpose)))
+    const orderedPurposes = new Set(purposeOrder)
+    config.services.forEach((service: any) => (service.purposes || []).forEach((purpose: string) => purposes.add(purpose)))
     purposes.forEach(purpose => {
-        if (purposeOrder.indexOf(purpose) === -1)
+        if (!orderedPurposes.has(purpose))
             purposeOrder.push(purpose)
     })
-    const sortedPurposes = Array.from(purposes.values()).sort((a,b) => purposeOrder.indexOf(a)-purposeOrder.indexOf(b))
+    const purposePositions = new Map<string, number>()
+    purposeOrder.forEach((purpose: string, index: number) => {
+        if (!purposePositions.has(purpose))
+            purposePositions.set(purpose, index)
+    })
+    const sortedPurposes = Array.from(purposes.values()).sort((a,b) => purposePositions.get(a)!-purposePositions.get(b)!)
     const move = (purpose: string, di: number) => {
         const i = purposeOrder.indexOf(purpose)
         const newPurposeOrder = [...purposeOrder]

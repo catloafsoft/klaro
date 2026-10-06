@@ -230,8 +230,14 @@ function getKlaroConfigName(hashParams: Map<string, string | boolean | undefined
 }
 
 function getHashParams(){
+    let hash = location.hash.slice(1)
+    try {
+        hash = decodeURI(hash)
+    } catch {
+        // Keep malformed escapes literal so unrelated page fragments cannot break setup.
+    }
     return new Map<string, string | boolean | undefined>(
-        decodeURI(location.hash.slice(1))
+        hash
             .split("&")
             .filter((kv) => kv !== '')
             .map((kv) => {

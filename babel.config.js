@@ -2,18 +2,14 @@
 /* eslint-env node */
 module.exports = {
     presets: [
-        [
-            '@babel/preset-env',
-            {
-                useBuiltIns: 'usage',
-                corejs: 3,
-            },
-        ],
-        '@babel/preset-react',
+        '@babel/preset-env',
+        ['@babel/preset-react', { runtime: 'classic' }],
         '@babel/preset-typescript',
     ],
     plugins: [
-        '@babel/plugin-transform-class-properties',
-        '@babel/plugin-transform-object-rest-spread',
+        ['babel-plugin-polyfill-corejs3', {
+            method: 'usage-global',
+            version: require('core-js/package.json').version,
+        }],
     ],
 };

@@ -1,5 +1,5 @@
 // we can either import Klaro without styles...
-import * as Klaro from "klaro/dist/klaro-no-css";
+import * as Klaro from "klaro/no-css";
 // and the manually load the styles (e.g. to bundle them manually)
 import "klaro/dist/klaro.css";
 // or we can import Klaro with styles:
@@ -19,7 +19,7 @@ const config = {
             }
         }
     },
-    apps: [
+    services: [
         {
             name: "googleAnalytics",
             purposes: ["analytics"],

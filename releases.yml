@@ -1,4 +1,45 @@
 - changelog:
+    en: >-
+      Modernize the fork with strict TypeScript, function components, refreshed dependencies, and React 18/19 compatibility. Harden consent storage and HTML text rendering, improve dialog accessibility, restore legacy package imports, and synchronize all browser bundles and stylesheets.
+  date: '2026-10-06'
+  files:
+    - name: cm-no-css.js
+      sha384: xrGP/qR67MygMCdDnr4xUWoVc5QIrnhdj3UtchlBMk/WoCrsyBX69GDCoshozf/W
+    - name: cm.js
+      sha384: xrGP/qR67MygMCdDnr4xUWoVc5QIrnhdj3UtchlBMk/WoCrsyBX69GDCoshozf/W
+    - name: ide-no-css.js
+      sha384: o71VAHP/0xnVmguWKThpmQQzXde0RyMdmiJAYbDDsqU1LEdLio4WprHQIrfj6CQg
+    - name: ide.css
+      sha384: FnfKe/cC1GEnZzTjJ+zJxNyKzPJDRt1BzHcdzkoTI0D6mszgZL26EFvhUo7uQ+KJ
+    - name: ide.js
+      sha384: 6fWJ8RlVkciahU1KH1+01dboXpZzOL4YCBDG2KXUTTtlaNptONxjjhB4w3tNH09i
+    - name: ide.min.css
+      sha384: 0HfREPa8OQ+Nf7xeLB5ecU0qHU0ddUWZxRkhHLunu1lWtac7oO/ZMclc3YQFXS1i
+    - name: klaro-no-css.js
+      sha384: LWqELcwCiWNyeD+UUrnpMZtuUqjHsNfFclXKs0UeEXWff/qvnWLvbRXRofrSNwwm
+    - name: klaro-no-translations-no-css.js
+      sha384: yf8RxvDmcVlSnCDHmwL4tl+2VxauXQWXENZuG3JSH1uHFC0N/MY9tbrNn467TpdY
+    - name: klaro-no-translations.css
+      sha384: lFVaQjGyylpq6dxBjVxQjRXsnAiLuxcyO8VaH89YT50Z2R/Das20gBZH5KojN5pJ
+    - name: klaro-no-translations.js
+      sha384: QOtdQVw2gD5OKgfu1+jrbwS9kLIx+WIrcYaGMOXScpWpl/rU4PIyQHNnTNnaBdBa
+    - name: klaro-no-translations.min.css
+      sha384: fIRrK3xhLqLF0yFcGICjfZAjTcvqx6bcJ9glUZRIVEmjQDZb/Eifa7Dh7N6vvu+n
+    - name: klaro.css
+      sha384: lFVaQjGyylpq6dxBjVxQjRXsnAiLuxcyO8VaH89YT50Z2R/Das20gBZH5KojN5pJ
+    - name: klaro.js
+      sha384: M5uDAy6rbEyFAWGzik2Ql+IC9sPd107K+zvHjtJkz/FoSt+jathxwf4Lh2+BrpSo
+    - name: klaro.min.css
+      sha384: fIRrK3xhLqLF0yFcGICjfZAjTcvqx6bcJ9glUZRIVEmjQDZb/Eifa7Dh7N6vvu+n
+    - name: translations-no-css.js
+      sha384: X5SMElgkTuZX9SMNv/EO/zkENWQ9xBVcSzM0TCCjXm/InamgOCxv2vwkhn6DCtUP
+    - name: translations.js
+      sha384: X5SMElgkTuZX9SMNv/EO/zkENWQ9xBVcSzM0TCCjXm/InamgOCxv2vwkhn6DCtUP
+  tags:
+    - improvements
+    - security
+  version: 0.8.0
+- changelog:
     de: '- Die Autofokus-Eigenschaft wird nur bei Aktivierung der entsprechenden Option
       `autoFocus` genutzt.
 

@@ -91,21 +91,16 @@ export default class KlaroApi {
             headers['Content-Type'] = contentType || 'application/json;charset=UTF-8';
 
         return fetch(url, { method: type, headers: headers, body: body })
-            .then((response) => response.text().then((text) => {
-                let responseData: Record<string, any> = {};
-                if (text !== '') {
-                    try {
-                        responseData = JSON.parse(text);
-                    } catch (error) {
-                        responseData = { text: text, error: error };
-                    }
-                }
+            .then((response) => {
                 if (response.status < 200 || response.status >= 300) {
-                    responseData.status = response.status;
-                    throw Object.assign(new Error('Klaro API request failed'), responseData);
+                    return response.text().then((text) => {
+                        const responseData = parseResponseText(text);
+                        responseData.status = response.status;
+                        throw Object.assign(new Error('Klaro API request failed'), responseData);
+                    });
                 }
-                return responseData;
-            }))
+                return response.text().then(parseResponseText);
+            })
             .catch((err) => {
                 if (err.status !== undefined)
                     throw err;
@@ -133,4 +128,14 @@ export default class KlaroApi {
         );
     }
 
+}
+
+function parseResponseText(text: string): Record<string, any> {
+    if (text === '')
+        return {};
+    try {
+        return JSON.parse(text);
+    } catch (error) {
+        return { text: text, error: error };
+    }
 }

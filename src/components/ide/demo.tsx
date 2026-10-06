@@ -40,14 +40,14 @@ export const Demo = ({t: ttt, config}: any) => {
     const [show, setShow] = useState(0)
     const [siteUrl, setSiteUrl] = useState('')
     const [lang, setLang] = useState(config.languages.length > 0 ? config.languages[0] : 'en')
-    const [testStore, setTestStore] = useState(new TestStore())
+    const [testStore, setTestStore] = useState(() => new TestStore())
     const auxiliaryTestStore = new TestStore()
     const manager = new ConsentManager(config, testStore, auxiliaryTestStore);
     const trans = getTranslations(config)
     const tt = (...args: [any, ...any[]]) => t(trans, lang, config.fallbackLang || 'zz', ...args)
     const languages = config.languages.map((language: string) => <option key={language} value={language}>{ttt(['languages', language])} ({language})</option>)
     const testOnSite = () => {
-        window.open(siteUrl+`#klaro-testing&klaro-config=${config.name}`)
+        window.open(siteUrl+`#klaro-testing&klaro-config=${encodeURIComponent(config.name)}`, '_blank', 'noopener')
     }
 
     const appRef = useRef<HTMLDivElement | null>(null)
@@ -60,7 +60,7 @@ export const Demo = ({t: ttt, config}: any) => {
         <p className="cm-section-description">
             {ttt(['demo', 'description'])}
         </p>
-        <form onSubmit={testOnSite}>
+        <form onSubmit={(e) => {e.preventDefault();testOnSite()}}>
             <div className="cm-config-controls">
                 <BaseRetractingLabelInput value={siteUrl} onChange={setSiteUrl} label={ttt(['demo','testOnSite', 'label'])}/>
                 <button type="submit" className="cm-control-button cm-success" onClick={(e) => {e.preventDefault();testOnSite()}}>
@@ -70,7 +70,7 @@ export const Demo = ({t: ttt, config}: any) => {
         </form>
         <div className="cm-config-controls">
             <div className="cm-control">
-                <select value={lang} onChange={(e) => setLang(e.target.value)}>
+                <select aria-label={String(ttt(['fields', 'languages', 'label']))} value={lang} onChange={(e) => setLang(e.target.value)}>
                     {languages}
                 </select>
             </div>

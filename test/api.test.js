@@ -38,4 +38,20 @@ describe('KlaroApi', () => {
             { method: 'GET', headers: {}, body: undefined }
         );
     });
+
+    it.each([
+        { status: 400, text: '{"detail":"bad input"}', expected: { status: 400, detail: 'bad input' } },
+        { status: 503, text: 'Unavailable', expected: { status: 503, text: 'Unavailable' } },
+    ])('preserves HTTP $status error details', async ({ status, text, expected }) => {
+        globalThis.fetch = vi.fn().mockResolvedValue({ status, text: async () => text });
+        const api = new KlaroApi('https://example.test', 'abc123');
+        await expect(api.apiRequest('GET', '/config')).rejects.toMatchObject(expected);
+    });
+
+    it('reports network failures with status zero', async () => {
+        const error = new TypeError('Connection failed');
+        globalThis.fetch = vi.fn().mockRejectedValue(error);
+        const api = new KlaroApi('https://example.test', 'abc123');
+        await expect(api.apiRequest('GET', '/config')).rejects.toMatchObject({ status: 0, error });
+    });
 });
