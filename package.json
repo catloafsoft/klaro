@@ -5,7 +5,7 @@
     "not dead"
   ],
   "bugs": {
-    "url": "https://github.com/KIProtect/klaro/issues"
+    "url": "https://github.com/catloafsoft/klaro/issues"
   },
   "description": "A simple but powerful consent manager.",
   "devDependencies": {
@@ -81,7 +81,10 @@
   "license": "BSD-3-Clause",
   "main": "dist/klaro.js",
   "module": "dist/klaro.js",
-  "name": "klaro",
+  "name": "@catloafsoft/klaro",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "packageManager": "pnpm@11.6.0",
   "types": "types/index.d.ts",
   "exports": {
@@ -126,7 +129,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kiprotect/klaro.git"
+    "url": "git+https://github.com/catloafsoft/klaro.git"
   },
   "scripts": {
     "lint": "eslint ./src --quiet",

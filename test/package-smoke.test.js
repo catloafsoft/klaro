@@ -10,12 +10,12 @@ const require = createRequire(import.meta.url);
 describe('package exports', () => {
     it('keeps legacy bundles and modern subpath exports addressable', () => {
         for (const name of ['klaro', 'no-css', 'cm', 'translations']) {
-            const modern = name === 'klaro' ? 'klaro' : `klaro/${name}`;
+            const modern = name === 'klaro' ? packageJson.name : `${packageJson.name}/${name}`;
             const bundle = name === 'no-css' ? 'klaro-no-css' : name;
-            expect(require.resolve(`klaro/dist/${bundle}`)).toBe(require.resolve(modern));
-            expect(require.resolve(`klaro/dist/${bundle}.js`)).toBe(require.resolve(modern));
+            expect(require.resolve(`${packageJson.name}/dist/${bundle}`)).toBe(require.resolve(modern));
+            expect(require.resolve(`${packageJson.name}/dist/${bundle}.js`)).toBe(require.resolve(modern));
         }
-        expect(readFileSync(require.resolve('klaro/klaro.css'), 'utf8')).toContain('.klaro');
+        expect(readFileSync(require.resolve(`${packageJson.name}/klaro.css`), 'utf8')).toContain('.klaro');
     });
 
     it.each(['%', '%E0%A4%A'])('handles a malformed page fragment: %s', (fragment) => {
@@ -24,7 +24,7 @@ describe('package exports', () => {
             runScripts: 'outside-only',
         });
         try {
-            runInContext(readFileSync(require.resolve('klaro'), 'utf8'), dom.getInternalVMContext());
+            runInContext(readFileSync(require.resolve(packageJson.name), 'utf8'), dom.getInternalVMContext());
             dom.window.klaro.setup({ services: [], noAutoLoad: true, storageMethod: 'test' });
             expect(dom.window.klaro.getManager().config.services).toHaveLength(0);
         } finally {
@@ -39,7 +39,7 @@ describe('package exports', () => {
                 runScripts: 'outside-only',
             });
             try {
-                runInContext(readFileSync(require.resolve(`klaro/dist/${bundle}`), 'utf8'), dom.getInternalVMContext());
+                runInContext(readFileSync(require.resolve(`${packageJson.name}/dist/${bundle}`), 'utf8'), dom.getInternalVMContext());
                 const api = dom.window.klaro;
                 expect(api.version()).toBe(packageJson.version);
                 api.setup({

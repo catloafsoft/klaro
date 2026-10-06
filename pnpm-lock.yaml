@@ -132,7 +132,7 @@ importers:
 
   examples/klaro-and-webpack:
     dependencies:
-      klaro:
+      '@catloafsoft/klaro':
         specifier: workspace:*
         version: link:../..
     devDependencies:

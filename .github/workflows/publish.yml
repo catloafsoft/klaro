@@ -1,0 +1,37 @@
+name: Publish GitHub Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    uses: ./.github/workflows/verify.yml
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          registry-url: https://npm.pkg.github.com
+          scope: '@catloafsoft'
+      - name: Verify release tag
+        run: node -e 'if (process.env.GITHUB_REF_NAME !== `v${require("./package.json").version}`) throw new Error("Tag must match package version")'
+      - run: pnpm publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Verify published version
+        run: pnpm view "@catloafsoft/klaro@$(node -p 'require("./package.json").version')" version dist.integrity repository.url --registry=https://npm.pkg.github.com
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

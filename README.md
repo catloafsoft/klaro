@@ -32,8 +32,9 @@ Current languages: Catalan, Croatian, Dutch, English, Finnish, French, Galician,
 This is the Catloaf Software fork of Klaro. Version 0.8 modernizes the toolchain,
 hardens consent handling and HTML text rendering, and preserves the browser API
 and existing bundle names. See [upstream documentation](https://heyklaro.com/docs/)
-for configuration guidance. To use this fork, build it or use its checked-in `dist`
-files; the upstream npm package and CDN do not distribute this fork.
+for configuration guidance. This fork is distributed as `@catloafsoft/klaro` through
+GitHub Packages and includes checked-in `dist` files. The upstream npm package and
+CDN do not distribute this fork.
 
 To use the widget, adapt the [annotated config.js](dist/config.js) and host it
 alongside [dist/klaro.js](dist/klaro.js). Source files need compilation before they
@@ -97,9 +98,25 @@ The consent manager is configured using a config dictionary, which you typically
 
 ## Using Klaro via NPM
 
-Install this fork as a package from GitHub:
+Configure the GitHub Packages registry in your project's `.npmrc`:
 
-    pnpm add github:catloafsoft/klaro
+```ini
+@catloafsoft:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+```
+
+Set `NODE_AUTH_TOKEN` to a GitHub personal access token (classic) with `read:packages`
+and access to the package, then install:
+
+    pnpm add @catloafsoft/klaro@0.8.0
+
+Keep credentials outside source control. GitHub Actions consumers can use their
+`GITHUB_TOKEN` when their repository has package access. See
+[GitHub's authentication guide](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-to-github-packages).
+
+Alternatively, install the fork directly from GitHub:
+
+    pnpm add @catloafsoft/klaro@github:catloafsoft/klaro
 
 The package includes fully-fledged Klaro with CSS as well as the version without CSS (the CSS
 bundle is also included). In addition, it contains the consent management framework without the UI classes,
@@ -107,16 +124,16 @@ which is handy in case you want to use your own UI classes:
 
 ```js
 // import Klaro with CSS
-import * as klaro from 'klaro'
+import * as klaro from '@catloafsoft/klaro'
 
 // import Klaro without CSS
-import * as klaro from 'klaro/no-css'
+import * as klaro from '@catloafsoft/klaro/no-css'
 
 // import the accompanying CSS (requires style-loader)
-import 'klaro/dist/klaro.css'
+import '@catloafsoft/klaro/dist/klaro.css'
 
 // import only the consent manager (no UI components)
-import ConsentManager from 'klaro/cm'
+import ConsentManager from '@catloafsoft/klaro/cm'
 ```
 
 This enables you to seamlessly integrate Klaro with your own JS projects, regardless if you use React, Vue,
@@ -145,17 +162,12 @@ After rebuilding all three bundle/CSS variants, run `pnpm run release-metadata`
 to update the current release's SHA-384 integrity hashes. CI verifies the checked-in
 bundles, package imports, browser API, and release metadata.
 
-To publish a new version of Klaro to NPM, simply run
-
-    make publish
-
-To generate a new tagged release, simply run
-
-    make release [RT=patch|minor|major]
-
-If no argument is given, a 'patch' release will be created. The release mechanism will not run if
-the working directory isn't clean. If it is, a Python script will increase the version number in
-the `package.json` file, rebuild the `dist` files, create a new commit and tag it with the version.
+To publish, update `package.json` and `releases.yml`, rebuild and verify the release,
+then commit the artifacts and push a tag matching the package version (for example,
+`v0.8.0`). The Publish GitHub Package workflow runs the full verification workflow
+before publishing to `https://npm.pkg.github.com` with its `GITHUB_TOKEN`, then
+reads back the published version and integrity. Package visibility and consumer
+repository access are managed in GitHub Packages settings.
 
 ## Contributing
 
